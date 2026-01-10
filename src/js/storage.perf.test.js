@@ -1,196 +1,249 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Mock Supabase
+vi.mock('./supabase.js', () => ({
+    supabase: {
+        from: vi.fn()
+    },
+    getUserId: vi.fn(() => 'test-user-id')
+}));
+
 import { getSavedWords, saveWord, deleteWord } from './storage.js';
+import { supabase } from './supabase.js';
 
 describe('Storage Performance Tests', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
+    let mockData = [];
+    let mockChain;
 
-  it('should save 50 words within acceptable time', () => {
-    const startTime = performance.now();
-    
-    for (let i = 0; i < 50; i++) {
-      saveWord(`word${i}`, `definition for word ${i}`, `Example with word${i}`);
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(100); // Should complete in less than 100ms
-    expect(getSavedWords().length).toBe(50);
-  });
+    beforeEach(() => {
+        vi.clearAllMocks();
+        mockData = [];
 
-  it('should retrieve 50 words quickly', () => {
-    // Setup: save 50 words
-    for (let i = 0; i < 50; i++) {
-      saveWord(`word${i}`, `definition ${i}`, `example ${i}`);
-    }
-    
-    const iterations = 1000;
-    const startTime = performance.now();
-    
-    for (let i = 0; i < iterations; i++) {
-      getSavedWords();
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    const avgDuration = duration / iterations;
-    
-    expect(avgDuration).toBeLessThan(1); // Should average less than 1ms per call
-  });
+        mockChain = {
+            select: vi.fn().mockReturnThis(),
+            insert: vi.fn().mockImplementation((data) => {
+                mockData.push(data);
+                return Promise.resolve({ error: null });
+            }),
+            update: vi.fn().mockReturnThis(),
+            delete: vi.fn().mockReturnThis(),
+            eq: vi.fn().mockReturnThis(),
+            ilike: vi.fn().mockImplementation((field, value) => {
+                mockData = mockData.filter(w =>
+                    w.word?.toLowerCase() !== value.toLowerCase()
+                );
+                return Promise.resolve({ error: null });
+            }),
+            lte: vi.fn().mockReturnThis(),
+            in: vi.fn().mockReturnThis(),
+            order: vi.fn().mockReturnThis(),
+            limit: vi.fn().mockImplementation(() => {
+                return Promise.resolve({ data: mockData.slice(0, 50), error: null });
+            }),
+        };
 
-  it('should delete words efficiently', () => {
-    // Setup: save 50 words
-    for (let i = 0; i < 50; i++) {
-      saveWord(`word${i}`, `definition ${i}`, `example ${i}`);
-    }
-    
-    const startTime = performance.now();
-    
-    // Delete 25 words
-    for (let i = 0; i < 25; i++) {
-      deleteWord(`word${i}`);
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(50); // Should complete in less than 50ms
-    expect(getSavedWords().length).toBe(25);
-  });
+        supabase.from.mockReturnValue(mockChain);
+    });
 
-  it('should handle duplicate word updates efficiently', () => {
-    const wordName = 'test';
-    const iterations = 100;
-    
-    const startTime = performance.now();
-    
-    for (let i = 0; i < iterations; i++) {
-      saveWord(wordName, `definition ${i}`, `example ${i}`);
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(200); // Should complete in less than 200ms
-    expect(getSavedWords().length).toBe(1); // Should only have 1 word (not 100)
-  });
+    it('should handle 50 async saves within acceptable time', async () => {
+        // Mock for checking existing words and inserting new ones
+        mockChain.limit.mockImplementation(() =>
+            Promise.resolve({ data: [], error: null })
+        );
 
-  it('should handle rapid consecutive saves', () => {
-    const startTime = performance.now();
-    
-    // Rapidly save different words
-    for (let i = 0; i < 20; i++) {
-      saveWord(`word${i}`, `def${i}`, `ex${i}`);
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(50);
-    expect(getSavedWords().length).toBe(20);
-  });
+        const startTime = performance.now();
 
-  it('should maintain performance with large definitions', () => {
-    const longDefinition = 'A'.repeat(1000); // 1000 character definition
-    const longExample = 'B'.repeat(500); // 500 character example
-    
-    const startTime = performance.now();
-    
-    for (let i = 0; i < 30; i++) {
-      saveWord(`word${i}`, longDefinition, longExample);
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(150);
-    
-    // Verify data integrity
-    const words = getSavedWords();
-    expect(words[0].definition).toHaveLength(1000);
-    expect(words[0].example).toHaveLength(500);
-  });
+        const promises = [];
+        for (let i = 0; i < 50; i++) {
+            promises.push(saveWord(`word${i}`, `definition for word ${i}`, `Example with word${i}`));
+        }
+        await Promise.all(promises);
 
-  it('should efficiently enforce 50 word limit', () => {
-    const startTime = performance.now();
-    
-    // Try to save 100 words
-    for (let i = 0; i < 100; i++) {
-      saveWord(`word${i}`, `definition ${i}`, `example ${i}`);
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(200);
-    expect(getSavedWords().length).toBe(50);
-    
-    // Verify we kept the most recent 50
-    const words = getSavedWords();
-    expect(words[0].word).toBe('word99'); // Most recent
-    expect(words[49].word).toBe('word50'); // Oldest kept
-  });
+        const endTime = performance.now();
+        const duration = endTime - startTime;
 
-  it('should handle case-insensitive operations efficiently', () => {
-    saveWord('Test', 'definition 1', 'example 1');
-    
-    const iterations = 50;
-    const startTime = performance.now();
-    
-    for (let i = 0; i < iterations; i++) {
-      saveWord('TEST', `definition ${i}`, `example ${i}`);
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(100);
-    expect(getSavedWords().length).toBe(1);
-  });
+        expect(duration).toBeLessThan(500); // Async operations need more time
+        expect(supabase.from).toHaveBeenCalled();
+    });
 
-  it('should handle JSON serialization performance', () => {
-    // Save 50 words with complex data
-    for (let i = 0; i < 50; i++) {
-      saveWord(
-        `word${i}`,
-        `This is a complex definition with special characters: !@#$%^&*() ${i}`,
-        `Example sentence with "quotes" and 'apostrophes' ${i}`
-      );
-    }
-    
-    const startTime = performance.now();
-    
-    // Perform multiple reads which involve JSON parsing
-    for (let i = 0; i < 100; i++) {
-      const words = getSavedWords();
-      expect(words).toBeDefined();
-    }
-    
-    const endTime = performance.now();
-    const duration = endTime - startTime;
-    
-    expect(duration).toBeLessThan(100); // 100 reads should be fast
-  });
+    it('should retrieve words quickly', async () => {
+        const mockWords = Array.from({ length: 50 }, (_, i) => ({
+            id: `${i}`,
+            word: `word${i}`,
+            definition: `definition ${i}`,
+            example: `example ${i}`,
+            timestamp: new Date().toISOString()
+        }));
+        mockChain.limit.mockResolvedValue({ data: mockWords, error: null });
 
-  it('should measure localStorage size impact', () => {
-    // Save 50 words
-    for (let i = 0; i < 50; i++) {
-      saveWord(
-        `word${i}`,
-        `Definition: ${'A'.repeat(100)}`,
-        `Example: ${'B'.repeat(100)}`
-      );
-    }
-    
-    const storageData = localStorage.getItem('lingodash_words');
-    const sizeInBytes = new Blob([storageData]).size;
-    const sizeInKB = sizeInBytes / 1024;
-    
-    // Should be reasonable size (under 50KB for 50 words)
-    expect(sizeInKB).toBeLessThan(50);
-    
-    console.log(`Storage size for 50 words: ${sizeInKB.toFixed(2)} KB`);
-  });
+        const iterations = 100;
+        const startTime = performance.now();
+
+        for (let i = 0; i < iterations; i++) {
+            await getSavedWords();
+        }
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+        const avgDuration = duration / iterations;
+
+        expect(avgDuration).toBeLessThan(5); // Should average less than 5ms per call
+    });
+
+    it('should delete words efficiently', async () => {
+        mockChain.ilike.mockResolvedValue({ error: null });
+
+        const startTime = performance.now();
+
+        const promises = [];
+        for (let i = 0; i < 25; i++) {
+            promises.push(deleteWord(`word${i}`));
+        }
+        await Promise.all(promises);
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        expect(duration).toBeLessThan(200);
+    });
+
+    it('should handle duplicate word updates efficiently', async () => {
+        const existingWord = { id: '1', word: 'test', definition: 'old' };
+        mockChain.limit.mockResolvedValue({ data: [existingWord], error: null });
+        mockChain.eq.mockResolvedValue({ error: null });
+
+        const iterations = 50;
+        const startTime = performance.now();
+
+        for (let i = 0; i < iterations; i++) {
+            await saveWord('test', `definition ${i}`, `example ${i}`);
+        }
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        expect(duration).toBeLessThan(500);
+    });
+
+    it('should handle rapid consecutive saves', async () => {
+        mockChain.limit.mockResolvedValue({ data: [], error: null });
+
+        const startTime = performance.now();
+
+        const promises = [];
+        for (let i = 0; i < 20; i++) {
+            promises.push(saveWord(`word${i}`, `def${i}`, `ex${i}`));
+        }
+        await Promise.all(promises);
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        expect(duration).toBeLessThan(300);
+    });
+
+    it('should maintain performance with large definitions', async () => {
+        const longDefinition = 'A'.repeat(1000);
+        const longExample = 'B'.repeat(500);
+
+        mockChain.limit.mockResolvedValue({ data: [], error: null });
+
+        const startTime = performance.now();
+
+        const promises = [];
+        for (let i = 0; i < 30; i++) {
+            promises.push(saveWord(`word${i}`, longDefinition, longExample));
+        }
+        await Promise.all(promises);
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        expect(duration).toBeLessThan(500);
+    });
+
+    it('should handle case-insensitive operations efficiently', async () => {
+        const existingWord = { id: '1', word: 'Test', definition: 'def' };
+        mockChain.limit.mockResolvedValue({ data: [existingWord], error: null });
+        mockChain.eq.mockResolvedValue({ error: null });
+
+        const iterations = 50;
+        const startTime = performance.now();
+
+        for (let i = 0; i < iterations; i++) {
+            await saveWord('TEST', `definition ${i}`, `example ${i}`);
+        }
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        expect(duration).toBeLessThan(500);
+    });
+
+    it('should handle JSON serialization performance', async () => {
+        const mockWords = Array.from({ length: 50 }, (_, i) => ({
+            id: `${i}`,
+            word: `word${i}`,
+            definition: `This is a complex definition with special characters: !@#$%^&*() ${i}`,
+            example: `Example sentence with "quotes" and 'apostrophes' ${i}`,
+            timestamp: new Date().toISOString()
+        }));
+        mockChain.limit.mockResolvedValue({ data: mockWords, error: null });
+
+        const startTime = performance.now();
+
+        for (let i = 0; i < 100; i++) {
+            const words = await getSavedWords();
+            expect(words).toBeDefined();
+        }
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        expect(duration).toBeLessThan(500);
+    });
+
+    it('should measure data size impact', async () => {
+        const mockWords = Array.from({ length: 50 }, (_, i) => ({
+            id: `${i}`,
+            word: `word${i}`,
+            definition: `Definition: ${'A'.repeat(100)}`,
+            example: `Example: ${'B'.repeat(100)}`,
+            timestamp: new Date().toISOString()
+        }));
+        mockChain.limit.mockResolvedValue({ data: mockWords, error: null });
+
+        const words = await getSavedWords();
+        const sizeInBytes = new Blob([JSON.stringify(words)]).size;
+        const sizeInKB = sizeInBytes / 1024;
+
+        // Should be reasonable size (under 50KB for 50 words)
+        expect(sizeInKB).toBeLessThan(50);
+
+        console.log(`Storage size for 50 words: ${sizeInKB.toFixed(2)} KB`);
+    });
+
+    it('should efficiently retrieve large datasets', async () => {
+        const mockWords = Array.from({ length: 50 }, (_, i) => ({
+            id: `${i}`,
+            word: `word${i}`,
+            definition: 'A'.repeat(200),
+            example: 'B'.repeat(100),
+            timestamp: new Date().toISOString()
+        }));
+        mockChain.limit.mockResolvedValue({ data: mockWords, error: null });
+
+        const iterations = 50;
+        const startTime = performance.now();
+
+        for (let i = 0; i < iterations; i++) {
+            const words = await getSavedWords();
+            expect(words.length).toBe(50);
+        }
+
+        const endTime = performance.now();
+        const duration = endTime - startTime;
+
+        expect(duration).toBeLessThan(300);
+    });
 });
