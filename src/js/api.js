@@ -20,9 +20,15 @@ export async function getWordDefinition(word) {
 1. Provide a brief, clear definition (1-2 sentences).
 2. Provide one simple example sentence using the word.
 
+IMPORTANT RULES:
+- DO NOT use the word "${word}" or any variation of it in the definition itself
+- The definition should describe the meaning WITHOUT mentioning the word
+- The example sentence should use the word "${word}" naturally
+- Keep the definition clear enough that someone could guess the word from it
+
 Format your response as:
-Definition: [definition here]
-Example: [example sentence here]
+Definition: [definition here - WITHOUT using the word "${word}"]
+Example: [example sentence using "${word}"]
 
 If it's not a valid word, say so briefly.`
                 }],
