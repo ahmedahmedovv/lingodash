@@ -10,6 +10,9 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
+    "test:perf": "vitest run --reporter=verbose src/js/*.perf.test.js",
+    "test:perf:watch": "vitest src/js/*.perf.test.js",
+    "test:all": "vitest run",
     "coverage": "vitest run --coverage"
   },
   "dependencies": {},

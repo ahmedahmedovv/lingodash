@@ -75,10 +75,12 @@ npm run preview
 npm test              # Run tests in watch mode
 npm run test:run      # Run tests once
 npm run test:ui       # Run tests with UI
+npm run test:perf     # Run performance tests
 npm run coverage      # Generate coverage report
 ```
 
 See [TEST_GUIDE.md](./TEST_GUIDE.md) for detailed testing documentation.
+See [PERFORMANCE.md](./PERFORMANCE.md) for performance testing guide.
 
 ## Usage
 

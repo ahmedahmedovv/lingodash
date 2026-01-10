@@ -21,6 +21,16 @@ npm test
 npm run test:ui
 ```
 
+### Run performance tests
+```bash
+npm run test:perf
+```
+
+### Run performance tests in watch mode
+```bash
+npm run test:perf:watch
+```
+
 ### Run tests with coverage report
 ```bash
 npm run coverage
@@ -69,6 +79,7 @@ All test files are located alongside their source files with the `.test.js` exte
 
 ## Test Results
 
+### Functional Tests
 ```
 ✓ src/js/storage.test.js (11 tests)
 ✓ src/js/api.test.js (8 tests)
@@ -78,6 +89,19 @@ All test files are located alongside their source files with the `.test.js` exte
 Test Files: 4 passed (4)
 Tests: 42 passed (42) ✅
 ```
+
+### Performance Tests
+```
+✓ src/js/storage.perf.test.js (10 tests)
+✓ src/js/ui.perf.test.js (8 tests)
+✓ src/js/exercise.perf.test.js (8 tests)
+
+Test Files: 3 passed (3)
+Tests: 26 passed (26) ✅
+Storage size for 50 words: ~15 KB
+```
+
+**Total: 68 tests across 7 test files** 🎉
 
 ## Writing New Tests
 
