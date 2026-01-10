@@ -8,7 +8,6 @@ let totalAttempts = 0; // Track total questions answered
 
 export function initExercise() {
     document.getElementById('startExercise').addEventListener('click', startExercise);
-    document.getElementById('submitAnswer').addEventListener('click', checkAnswer);
     document.getElementById('nextQuestion').addEventListener('click', nextQuestion);
     document.getElementById('restartExercise').addEventListener('click', resetExercise);
 
@@ -144,11 +143,17 @@ function showQuestion() {
     const answerInput = document.getElementById('answerInput');
     answerInput.value = '';
     answerInput.disabled = false;
+    answerInput.classList.remove('correct-input', 'incorrect-input');
     answerInput.focus();
     
     document.getElementById('answerFeedback').innerHTML = '';
-    document.getElementById('submitAnswer').style.display = 'inline-block';
     document.getElementById('nextQuestion').style.display = 'none';
+    
+    // Show hint text when input is enabled
+    const hintText = document.querySelector('.press-enter-hint');
+    if (hintText) {
+        hintText.style.display = 'block';
+    }
     
     // Keep word stats hidden (minimalist approach)
     // document.getElementById('wordStats').classList.remove('visible');
@@ -237,9 +242,12 @@ async function checkAnswer() {
     // Increment total attempts
     totalAttempts++;
     
-    // Disable input and submit button
+    // Disable input and hide hint text
     answerInput.disabled = true;
-    document.getElementById('submitAnswer').style.display = 'none';
+    const hintText = document.querySelector('.press-enter-hint');
+    if (hintText) {
+        hintText.style.display = 'none';
+    }
     
     // Update spaced repetition data
     await updateWordReview(currentWord.word, isCorrect);

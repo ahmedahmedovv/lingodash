@@ -691,10 +691,12 @@ input[type="text"]::placeholder {
 }
 
 .press-enter-hint {
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
-    opacity: 0.8;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: #6D5C4D;
+    text-align: center;
     font-style: italic;
+    opacity: 0.85;
 }
 
 .highlight-word {
