@@ -463,7 +463,57 @@ input[type="text"]::placeholder {
 .exercise-subinfo {
     color: #6D5C4D;
     font-size: 1.15rem;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.session-size-selector {
+    margin: 1.5rem 0 2.5rem;
+    padding: 1rem;
+    background: #F5F1E8;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+.session-size-label {
+    display: block;
+    color: #6D5C4D;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.session-size-options {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.session-size-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: #3E2723;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.session-size-option:hover {
+    background: rgba(139, 115, 85, 0.1);
+}
+
+.session-size-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #8B7355;
+}
+
+.session-size-option span {
+    user-select: none;
 }
 
 .start-btn {

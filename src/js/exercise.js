@@ -7,7 +7,48 @@ let correctAnswers = 0;
 let masteredWords = new Set(); // Track words answered correctly in this session
 let totalAttempts = 0; // Track total questions answered
 
+// Session size preference management
+const SESSION_SIZE_KEY = 'lingodash_session_size';
+const DEFAULT_SESSION_SIZE = 25;
+
+function getSessionSize() {
+    const saved = localStorage.getItem(SESSION_SIZE_KEY);
+    return saved ? parseInt(saved, 10) : DEFAULT_SESSION_SIZE;
+}
+
+function setSessionSize(size) {
+    localStorage.setItem(SESSION_SIZE_KEY, size.toString());
+}
+
 export function initExercise() {
+    // Load and set saved session size preference
+    const savedSize = getSessionSize();
+    const sessionSize25 = document.getElementById('sessionSize25');
+    const sessionSize50 = document.getElementById('sessionSize50');
+    
+    if (sessionSize25 && sessionSize50) {
+        if (savedSize === 50) {
+            sessionSize50.checked = true;
+            sessionSize25.checked = false;
+        } else {
+            sessionSize25.checked = true;
+            sessionSize50.checked = false;
+        }
+        
+        // Add event listeners for session size changes
+        sessionSize25.addEventListener('change', () => {
+            if (sessionSize25.checked) {
+                setSessionSize(25);
+            }
+        });
+        
+        sessionSize50.addEventListener('change', () => {
+            if (sessionSize50.checked) {
+                setSessionSize(50);
+            }
+        });
+    }
+    
     document.getElementById('startExercise').addEventListener('click', startExercise);
     document.getElementById('nextQuestion').addEventListener('click', nextQuestion);
     document.getElementById('restartExercise').addEventListener('click', resetExercise);
@@ -58,37 +99,54 @@ async function startExercise() {
     if (savedWords.length < 3) {
         exerciseContent.innerHTML = '<p class="error">You need at least 3 saved words to start the exercise!</p>';
         setTimeout(() => {
-            exerciseContent.innerHTML = `
-                <h2>Practice Your Words</h2>
-                <p>Test your vocabulary knowledge with spaced repetition exercises.</p>
-                <button id="startExercise" class="primary-btn">Start Exercise</button>
-            `;
-            document.getElementById('startExercise').addEventListener('click', startExercise);
+            renderExerciseStartScreen();
         }, 3000);
         return;
     }
     
+    // Get session size preference
+    const sessionSize = getSessionSize();
+    
     // Get words due for review (uses spaced repetition)
     let dueWords = await getWordsDueForReview();
     
-    // If less than 5 words are due, add some random words to make it more interesting
-    if (dueWords.length < 5 && savedWords.length > dueWords.length) {
-        const notDueWords = savedWords.filter(word => 
-            !dueWords.find(dueWord => dueWord.word.toLowerCase() === word.word.toLowerCase())
-        );
-        const additionalWords = notDueWords
-            .sort(() => Math.random() - 0.5)
-            .slice(0, Math.min(5 - dueWords.length, notDueWords.length));
-        
-        exerciseWords = [...dueWords, ...additionalWords];
-    } else if (dueWords.length === 0) {
-        // No words due, use random selection
-        exerciseWords = savedWords.sort(() => Math.random() - 0.5).slice(0, 10);
-    } else {
-        exerciseWords = dueWords;
+    // Prioritize words due for review, but limit to session size
+    let selectedWords = [];
+    
+    // First, take due words up to the session size limit
+    if (dueWords.length > 0) {
+        selectedWords = dueWords.slice(0, sessionSize);
     }
     
+    // If we have fewer words than the session size, add random words from saved words
+    if (selectedWords.length < sessionSize && savedWords.length > selectedWords.length) {
+        // Get words that aren't already selected (avoid duplicates)
+        const selectedWordLower = new Set(selectedWords.map(w => w.word.toLowerCase()));
+        const availableWords = savedWords.filter(word => 
+            !selectedWordLower.has(word.word.toLowerCase())
+        );
+        
+        // Shuffle and take enough to reach session size
+        const remaining = sessionSize - selectedWords.length;
+        const additionalWords = availableWords
+            .sort(() => Math.random() - 0.5)
+            .slice(0, Math.min(remaining, availableWords.length));
+        
+        selectedWords = [...selectedWords, ...additionalWords];
+    }
+    
+    // If no words were due and we still don't have enough, use random selection
+    if (selectedWords.length === 0 && savedWords.length > 0) {
+        selectedWords = savedWords
+            .sort(() => Math.random() - 0.5)
+            .slice(0, Math.min(sessionSize, savedWords.length));
+    }
+    
+    // Limit to session size (ensure we don't exceed it)
+    exerciseWords = selectedWords.slice(0, sessionSize);
+    
     // Add slight randomization while keeping priority on due words
+    // Split into priority (first half) and other (second half) for better distribution
     const priorityWords = exerciseWords.slice(0, Math.ceil(exerciseWords.length / 2));
     const otherWords = exerciseWords.slice(Math.ceil(exerciseWords.length / 2));
     exerciseWords = [
@@ -101,19 +159,61 @@ async function startExercise() {
     masteredWords.clear(); // Reset mastered words
     totalAttempts = 0; // Reset attempts counter
     
-    // Reset the exercise content HTML
-    exerciseContent.innerHTML = `
-        <h2>Practice Your Words</h2>
-        <p>Test your vocabulary knowledge with spaced repetition exercises.</p>
-        <button id="startExercise" class="primary-btn">Start Exercise</button>
-    `;
-    
+    // Reset the exercise content HTML (will be restored on reset)
     document.getElementById('exerciseContent').style.display = 'none';
     document.getElementById('exerciseQuiz').style.display = 'block';
     document.getElementById('exerciseResults').style.display = 'none';
     
     updateExerciseProgress();
     showQuestion();
+}
+
+function renderExerciseStartScreen() {
+    const exerciseContent = document.getElementById('exerciseContent');
+    if (!exerciseContent) return;
+    
+    const savedSize = getSessionSize();
+    
+    exerciseContent.innerHTML = `
+        <div class="exercise-start">
+            <p class="exercise-info">📝 Read the definition and type the correct word!</p>
+            <p class="exercise-subinfo">Test your vocabulary by typing answers</p>
+            <div class="session-size-selector">
+                <label class="session-size-label">Words per session:</label>
+                <div class="session-size-options">
+                    <label class="session-size-option">
+                        <input type="radio" name="sessionSize" value="25" id="sessionSize25" ${savedSize === 25 ? 'checked' : ''}>
+                        <span>25 words</span>
+                    </label>
+                    <label class="session-size-option">
+                        <input type="radio" name="sessionSize" value="50" id="sessionSize50" ${savedSize === 50 ? 'checked' : ''}>
+                        <span>50 words</span>
+                    </label>
+                </div>
+            </div>
+            <button id="startExercise" class="start-btn">Start Exercise</button>
+        </div>
+    `;
+    
+    // Re-initialize event listeners for the new elements
+    const sessionSize25 = document.getElementById('sessionSize25');
+    const sessionSize50 = document.getElementById('sessionSize50');
+    
+    if (sessionSize25 && sessionSize50) {
+        sessionSize25.addEventListener('change', () => {
+            if (sessionSize25.checked) {
+                setSessionSize(25);
+            }
+        });
+        
+        sessionSize50.addEventListener('change', () => {
+            if (sessionSize50.checked) {
+                setSessionSize(50);
+            }
+        });
+    }
+    
+    document.getElementById('startExercise').addEventListener('click', startExercise);
 }
 
 function showQuestion() {
@@ -498,4 +598,5 @@ function resetExercise() {
     masteredWords.clear();
     totalAttempts = 0;
     updateExerciseProgress();
+    renderExerciseStartScreen();
 }
