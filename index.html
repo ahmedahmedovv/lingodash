@@ -7,8 +7,66 @@
 </head>
 <body>
     <div class="container">
-        <div class="app-wrapper">
-            <h1 class="main-title">LingoDash</h1>
+        <!-- Auth UI (shown when not logged in) -->
+        <div id="authWrapper" class="auth-wrapper" style="display: none;">
+            <div class="auth-container">
+                <h1 class="main-title">LingoDash</h1>
+                <div class="auth-card">
+                    <div class="auth-tabs">
+                        <button class="auth-tab-btn active" data-auth-mode="signin">Sign In</button>
+                        <button class="auth-tab-btn" data-auth-mode="signup">Sign Up</button>
+                    </div>
+                    
+                    <div id="authContent" class="auth-content">
+                        <!-- Sign In Form -->
+                        <div id="signinForm" class="auth-form">
+                            <h2>Welcome Back</h2>
+                            <p class="auth-subtitle">Sign in to access your vocabulary</p>
+                            <form id="signinFormElement">
+                                <div class="form-group">
+                                    <label for="signinEmail">Email</label>
+                                    <input type="email" id="signinEmail" required placeholder="your.email@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="signinPassword">Password</label>
+                                    <input type="password" id="signinPassword" required placeholder="Enter your password">
+                                </div>
+                                <div id="authError" class="auth-error" style="display: none;"></div>
+                                <button type="submit" class="auth-submit-btn">Sign In</button>
+                            </form>
+                        </div>
+                        
+                        <!-- Sign Up Form -->
+                        <div id="signupForm" class="auth-form" style="display: none;">
+                            <h2>Create Account</h2>
+                            <p class="auth-subtitle">Start building your vocabulary</p>
+                            <form id="signupFormElement">
+                                <div class="form-group">
+                                    <label for="signupEmail">Email</label>
+                                    <input type="email" id="signupEmail" required placeholder="your.email@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="signupPassword">Password</label>
+                                    <input type="password" id="signupPassword" required placeholder="At least 6 characters" minlength="6">
+                                </div>
+                                <div id="signupAuthError" class="auth-error" style="display: none;"></div>
+                                <button type="submit" class="auth-submit-btn">Sign Up</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main App UI (shown when logged in) -->
+        <div id="appWrapper" class="app-wrapper" style="display: none;">
+            <div class="app-header">
+                <h1 class="main-title">LingoDash</h1>
+                <div class="user-menu">
+                    <span id="userEmail" class="user-email"></span>
+                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                </div>
+            </div>
             
             <div class="tab-container">
                 <div class="tab-header">

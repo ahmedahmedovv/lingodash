@@ -3,7 +3,7 @@ import { supabase, getUserId } from './supabase.js';
 
 export async function getSavedWords() {
     try {
-        const userId = getUserId();
+        const userId = await getUserId();
         
         const { data, error } = await supabase
             .from('words')
@@ -38,7 +38,7 @@ export async function getSavedWords() {
 
 export async function saveWord(word, definition, example = '') {
     try {
-        const userId = getUserId();
+        const userId = await getUserId();
         
         // Check if word already exists
         const { data: existingWords, error: fetchError } = await supabase
@@ -136,7 +136,7 @@ async function cleanupOldWords(userId) {
 // Update spaced repetition data after reviewing a word
 export async function updateWordReview(word, isCorrect) {
     try {
-        const userId = getUserId();
+        const userId = await getUserId();
         
         // Get the word
         const { data: words, error: fetchError } = await supabase
@@ -218,7 +218,7 @@ export async function updateWordReview(word, isCorrect) {
 // Get words that are due for review
 export async function getWordsDueForReview() {
     try {
-        const userId = getUserId();
+        const userId = await getUserId();
         const now = new Date().toISOString();
         
         const { data, error } = await supabase
@@ -254,7 +254,7 @@ export async function getWordsDueForReview() {
 
 export async function updateWord(originalWord, newWord, newDefinition, newExample) {
     try {
-        const userId = getUserId();
+        const userId = await getUserId();
 
         // Find the existing word
         const { data: existingWords, error: fetchError } = await supabase
@@ -320,7 +320,7 @@ export async function updateWord(originalWord, newWord, newDefinition, newExampl
 
 export async function deleteWord(word) {
     try {
-        const userId = getUserId();
+        const userId = await getUserId();
         
         const { error } = await supabase
             .from('words')
@@ -343,7 +343,7 @@ export async function deleteWord(word) {
 export async function clearAllWords() {
     if (confirm('Are you sure you want to clear all saved words?')) {
         try {
-            const userId = getUserId();
+            const userId = await getUserId();
             
             const { error } = await supabase
                 .from('words')

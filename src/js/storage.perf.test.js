@@ -3,9 +3,12 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 // Mock Supabase
 vi.mock('./supabase.js', () => ({
     supabase: {
-        from: vi.fn()
+        from: vi.fn(),
+        auth: {
+            getUser: vi.fn(() => Promise.resolve({ data: { user: null }, error: null }))
+        }
     },
-    getUserId: vi.fn(() => 'test-user-id')
+    getUserId: vi.fn(() => Promise.resolve('test-user-id'))
 }));
 
 import { getSavedWords, saveWord, deleteWord } from './storage.js';
