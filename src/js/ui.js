@@ -13,22 +13,21 @@ export async function displaySavedWords() {
     const words = await getSavedWords();
     
     if (words.length === 0) {
-        savedWordsList.innerHTML = '<p class="empty-state">No saved words yet. Look up a word to get started!</p>';
+        savedWordsList.innerHTML = '<p class="empty-state">No saved words yet</p>';
         return;
     }
     
     savedWordsList.innerHTML = words.map((item, index) => `
         <div class="saved-word-item">
             <div class="saved-word-header">
-                <h4>${item.word}</h4>
+                <span class="saved-word-title">${item.word}</span>
                 <div class="saved-word-actions">
-                    <button class="edit-btn" data-word="${item.word}" data-definition="${escapeAttr(item.definition)}" data-example="${escapeAttr(item.example || '')}" data-index="${index}" title="Edit">&#9998;</button>
-                    <button class="delete-btn" data-word="${item.word}" data-index="${index}" title="Delete">&times;</button>
+                    <button class="edit-btn" data-word="${item.word}" data-definition="${escapeAttr(item.definition)}" data-example="${escapeAttr(item.example || '')}" data-index="${index}">✎</button>
+                    <button class="delete-btn" data-word="${item.word}" data-index="${index}">×</button>
                 </div>
             </div>
             <p class="saved-definition">${item.definition}</p>
             ${item.example ? `<p class="saved-example">${item.example}</p>` : ''}
-            <span class="saved-timestamp">${new Date(item.timestamp).toLocaleDateString()}</span>
         </div>
     `).join('');
     

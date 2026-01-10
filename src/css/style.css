@@ -232,18 +232,10 @@ input[type="text"]::placeholder {
 
 .saved-words-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #D4C5B0;
-}
-
-.saved-words-header h2 {
-    color: #8B7355;
-    font-size: 1.5rem;
-    margin: 0;
-    font-weight: 600;
+    padding-bottom: 0;
 }
 
 .header-actions {
@@ -252,34 +244,32 @@ input[type="text"]::placeholder {
     align-items: center;
 }
 
-.export-btn {
-    padding: 6px 12px;
-    background: #8B7355;
-    color: white;
-    border: none;
-    border-radius: 6px;
+.export-btn,
+.clear-btn {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    color: #6D5C4D;
+    border: 1px solid #D4C5B0;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 0.85rem;
-    transition: background 0.3s ease;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
 }
 
-.export-btn:hover {
-    background: #7a6349;
+.export-btn:hover,
+.clear-btn:hover {
+    border-color: #8B7355;
+    color: #8B7355;
 }
 
 .clear-btn {
-    padding: 6px 12px;
-    background: #A0522D;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background 0.3s ease;
+    color: #A0522D;
+    border-color: #D4C5B0;
 }
 
 .clear-btn:hover {
-    background: #8B4513;
+    border-color: #A0522D;
+    color: #A0522D;
 }
 
 .saved-words-list {
@@ -289,23 +279,21 @@ input[type="text"]::placeholder {
 
 .empty-state {
     color: #A89F8F;
-    font-style: italic;
     text-align: center;
     padding: 2rem;
+    font-size: 0.9rem;
 }
 
 .saved-word-item {
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    background: #F5F1E8;
-    border-radius: 8px;
-    border-left: 5px solid #8B7355;
-    transition: all 0.3s ease;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: transparent;
+    border-bottom: 1px solid #E8DFD0;
+    transition: background 0.2s ease;
 }
 
 .saved-word-item:hover {
-    background: #EDE6D6;
-    transform: translateX(4px);
+    background: #FAF7F0;
 }
 
 .saved-word-header {
@@ -315,96 +303,72 @@ input[type="text"]::placeholder {
     margin-bottom: 0.5rem;
 }
 
+.saved-word-title {
+    color: #3E2723;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
 .saved-word-actions {
     display: flex;
     gap: 0.5rem;
     align-items: center;
 }
 
-.saved-word-item h4 {
-    color: #8B7355;
-    font-size: 1.3rem;
-    margin: 0;
-}
-
-.edit-btn {
+.edit-btn,
+.delete-btn {
     background: transparent;
-    color: #8B7355;
+    color: #6D5C4D;
     border: none;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s ease;
+    padding: 0.25rem 0.5rem;
+    transition: color 0.2s ease;
 }
 
 .edit-btn:hover {
-    background: #8B7355;
-    color: white;
+    color: #8B7355;
 }
 
 .delete-btn {
-    background: transparent;
-    color: #A0522D;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.2s ease;
+    color: #6D5C4D;
 }
 
 .delete-btn:hover {
-    background: #A0522D;
-    color: white;
+    color: #A0522D;
 }
 
 .saved-definition {
     color: #3E2723;
-    font-size: 1.05rem;
-    line-height: 1.6;
+    font-size: 0.95rem;
+    line-height: 1.5;
     margin-bottom: 0.5rem;
 }
 
 .saved-example {
     color: #6D5C4D;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 0.5rem;
-    font-style: italic;
-}
-
-.saved-timestamp {
-    color: #A89F8F;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-bottom: 0;
     font-style: italic;
 }
 
 /* Scrollbar styling */
 .saved-words-list::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .saved-words-list::-webkit-scrollbar-track {
-    background: #EDE6D6;
-    border-radius: 4px;
+    background: transparent;
 }
 
 .saved-words-list::-webkit-scrollbar-thumb {
-    background: #A0826D;
-    border-radius: 4px;
+    background: #D4C5B0;
+    border-radius: 3px;
 }
 
 .saved-words-list::-webkit-scrollbar-thumb:hover {
-    background: #8B7355;
+    background: #A89F8F;
 }
 
 /* Exercise Tab Styles */
