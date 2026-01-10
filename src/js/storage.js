@@ -36,6 +36,44 @@ export async function getSavedWords() {
     }
 }
 
+// Check if a word exists in Supabase and return its data
+export async function getWordIfExists(word) {
+    try {
+        if (!word || !word.trim()) {
+            return null;
+        }
+
+        const userId = await getUserId();
+        
+        const { data: existingWords, error: fetchError } = await supabase
+            .from('words')
+            .select('*')
+            .eq('user_id', userId)
+            .ilike('word', word)
+            .limit(1);
+        
+        if (fetchError) {
+            console.error('Error checking existing word:', fetchError);
+            return null;
+        }
+        
+        if (existingWords && existingWords.length > 0) {
+            const existingWord = existingWords[0];
+            // Return in the same format as AI API response
+            return {
+                word: existingWord.word,
+                definition: existingWord.definition,
+                example: existingWord.example || ''
+            };
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Error in getWordIfExists:', error);
+        return null;
+    }
+}
+
 export async function saveWord(word, definition, example = '') {
     try {
         const userId = await getUserId();

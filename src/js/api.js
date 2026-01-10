@@ -1,4 +1,5 @@
 import { MISTRAL_API_KEY, MISTRAL_API_URL } from './config.js';
+import { getWordIfExists } from './storage.js';
 
 // Rate limiting configuration
 const RATE_LIMIT_DELAY = 1000; // 1 second between requests
@@ -13,6 +14,14 @@ function delay(ms) {
 export async function getWordDefinition(word, retryCount = 0) {
     if (!word.trim()) {
         return null;
+    }
+
+    // Check Supabase first (only on first call, not retries)
+    if (retryCount === 0) {
+        const existingWord = await getWordIfExists(word);
+        if (existingWord) {
+            return { ...existingWord, fromSupabase: true };
+        }
     }
 
     try {
@@ -65,7 +74,7 @@ If it's not a valid word, say so briefly.`
             example = parts[1].trim();
         }
 
-        return { word, definition, example };
+        return { word, definition, example, fromSupabase: false };
     } catch (error) {
         console.error('Error fetching definition:', error);
         let errorMessage = error.message;
@@ -100,37 +109,60 @@ export async function getBatchWordDefinitions(words, progressCallback = null, on
     for (let i = 0; i < uniqueWords.length; i++) {
         const word = uniqueWords[i];
         
-        // Update progress if callback provided
+        // Check Supabase first for better progress feedback
         if (progressCallback) {
-            progressCallback(i + 1, uniqueWords.length, word);
+            progressCallback(i + 1, uniqueWords.length, word, 'checking');
         }
         
-        try {
-            const result = await getWordDefinition(word);
-            const successResult = { ...result, success: true };
-            results.push(successResult);
-            
-            // Notify that word is complete (for auto-save)
-            if (onWordCompleteCallback) {
-                onWordCompleteCallback(successResult);
+        const existingWord = await getWordIfExists(word);
+        let result;
+        
+        if (existingWord) {
+            // Word exists in Supabase, reuse it
+            if (progressCallback) {
+                progressCallback(i + 1, uniqueWords.length, word, 'reusing');
             }
-        } catch (error) {
-            const errorResult = { 
-                word, 
-                error: error.message, 
-                success: false 
-            };
-            results.push(errorResult);
+            result = existingWord;
+        } else {
+            // Word doesn't exist, fetch from AI
+            if (progressCallback) {
+                progressCallback(i + 1, uniqueWords.length, word, 'fetching');
+            }
             
-            // Notify about error too
-            if (onWordCompleteCallback) {
-                onWordCompleteCallback(errorResult);
+            try {
+                result = await getWordDefinition(word);
+            } catch (error) {
+                const errorResult = { 
+                    word, 
+                    error: error.message, 
+                    success: false 
+                };
+                results.push(errorResult);
+                
+                // Notify about error
+                if (onWordCompleteCallback) {
+                    onWordCompleteCallback(errorResult);
+                }
+                
+                // Add delay before next word (even on error)
+                if (i < uniqueWords.length - 1) {
+                    await delay(RATE_LIMIT_DELAY);
+                }
+                continue;
+            }
+            
+            // Add delay between AI API requests (except after the last one)
+            if (i < uniqueWords.length - 1) {
+                await delay(RATE_LIMIT_DELAY);
             }
         }
         
-        // Add delay between requests (except after the last one)
-        if (i < uniqueWords.length - 1) {
-            await delay(RATE_LIMIT_DELAY);
+        const successResult = { ...result, success: true, fromSupabase: !!existingWord };
+        results.push(successResult);
+        
+        // Notify that word is complete (for auto-save)
+        if (onWordCompleteCallback) {
+            onWordCompleteCallback(successResult);
         }
     }
 

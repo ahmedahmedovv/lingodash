@@ -11,7 +11,7 @@ vi.mock('./supabase.js', () => ({
     getUserId: vi.fn(() => Promise.resolve('test-user-id'))
 }));
 
-import { getSavedWords, saveWord, deleteWord, clearAllWords, updateWordReview, getWordsDueForReview } from './storage.js';
+import { getSavedWords, saveWord, deleteWord, clearAllWords, updateWordReview, getWordsDueForReview, getWordIfExists } from './storage.js';
 import { supabase } from './supabase.js';
 
 describe('Storage Functions', () => {
@@ -76,6 +76,108 @@ describe('Storage Functions', () => {
 
             const words = await getSavedWords();
             expect(words).toEqual([]);
+        });
+    });
+
+    describe('getWordIfExists', () => {
+        it('should return null for empty word', async () => {
+            const result = await getWordIfExists('');
+            expect(result).toBeNull();
+            expect(supabase.from).not.toHaveBeenCalled();
+        });
+
+        it('should return null for whitespace-only word', async () => {
+            const result = await getWordIfExists('   ');
+            expect(result).toBeNull();
+            expect(supabase.from).not.toHaveBeenCalled();
+        });
+
+        it('should return word data if word exists', async () => {
+            const existingWord = {
+                id: '123',
+                word: 'hello',
+                definition: 'A greeting',
+                example: 'Hello, world!',
+                timestamp: new Date().toISOString(),
+                interval: 0,
+                ease_factor: 2.5,
+                next_review: new Date().toISOString(),
+                review_count: 0,
+                correct_count: 0
+            };
+
+            const mockChain = createMockChain({ data: [existingWord], error: null });
+            supabase.from.mockReturnValue(mockChain);
+
+            const result = await getWordIfExists('hello');
+
+            expect(result).toEqual({
+                word: 'hello',
+                definition: 'A greeting',
+                example: 'Hello, world!'
+            });
+            expect(supabase.from).toHaveBeenCalledWith('words');
+            expect(mockChain.eq).toHaveBeenCalledWith('user_id', 'test-user-id');
+            expect(mockChain.ilike).toHaveBeenCalledWith('word', 'hello');
+        });
+
+        it('should return null if word does not exist', async () => {
+            const mockChain = createMockChain({ data: [], error: null });
+            supabase.from.mockReturnValue(mockChain);
+
+            const result = await getWordIfExists('nonexistent');
+
+            expect(result).toBeNull();
+        });
+
+        it('should return empty example if example is null', async () => {
+            const existingWord = {
+                id: '123',
+                word: 'test',
+                definition: 'A test',
+                example: null
+            };
+
+            const mockChain = createMockChain({ data: [existingWord], error: null });
+            supabase.from.mockReturnValue(mockChain);
+
+            const result = await getWordIfExists('test');
+
+            expect(result).toEqual({
+                word: 'test',
+                definition: 'A test',
+                example: ''
+            });
+        });
+
+        it('should handle Supabase errors gracefully', async () => {
+            const mockChain = createMockChain({ data: null, error: { message: 'Database error' } });
+            supabase.from.mockReturnValue(mockChain);
+
+            const result = await getWordIfExists('hello');
+
+            expect(result).toBeNull();
+        });
+
+        it('should handle case-insensitive matching', async () => {
+            const existingWord = {
+                id: '123',
+                word: 'Hello',
+                definition: 'A greeting',
+                example: 'Hello, world!'
+            };
+
+            const mockChain = createMockChain({ data: [existingWord], error: null });
+            supabase.from.mockReturnValue(mockChain);
+
+            const result = await getWordIfExists('HELLO');
+
+            expect(result).toEqual({
+                word: 'Hello',
+                definition: 'A greeting',
+                example: 'Hello, world!'
+            });
+            expect(mockChain.ilike).toHaveBeenCalledWith('word', 'HELLO');
         });
     });
 

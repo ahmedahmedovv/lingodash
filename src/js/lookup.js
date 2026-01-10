@@ -75,12 +75,19 @@ async function lookupWord(word) {
 
     try {
         const result = await getWordDefinition(word);
+        
+        const isAlreadySaved = result.fromSupabase;
+        const saveButtonText = isAlreadySaved ? '✓ Already Saved (Update)' : '💾 Save Word';
+        const sourceIndicator = isAlreadySaved 
+            ? '<p style="color: #3498db; font-size: 0.9em; margin-top: 8px;">✓ This word is already in your collection</p>' 
+            : '<p style="color: #27ae60; font-size: 0.9em; margin-top: 8px;">🆕 New word fetched from AI</p>';
 
         definitionContent.innerHTML = `
             <h3>${result.word}</h3>
             <p><strong>Definition:</strong> ${result.definition}</p>
             ${result.example ? `<p class="example-text"><strong>Example:</strong> ${result.example}</p>` : ''}
-            <button class="save-btn" id="saveWordBtn">💾 Save Word</button>
+            ${sourceIndicator}
+            <button class="save-btn" id="saveWordBtn" ${isAlreadySaved ? 'style="background: #3498db;"' : ''}>${saveButtonText}</button>
         `;
         
         // Add event listener for save button
@@ -151,22 +158,36 @@ async function batchLookup(words) {
         const results = await getBatchWordDefinitions(
             words, 
             // Progress callback
-            (current, total, currentWord) => {
-                batchProgress.textContent = `Looking up word ${current}/${total}: "${currentWord}"... (${savedCount} saved)`;
+            (current, total, currentWord, source) => {
+                if (source === 'checking') {
+                    batchProgress.textContent = `Checking word ${current}/${total}: "${currentWord}"... (${savedCount} saved)`;
+                } else if (source === 'reusing') {
+                    batchProgress.textContent = `Reusing "${currentWord}" from collection (${current}/${total})... (${savedCount} saved)`;
+                } else if (source === 'fetching') {
+                    batchProgress.textContent = `Fetching "${currentWord}" from AI (${current}/${total})... (${savedCount} saved)`;
+                } else {
+                    batchProgress.textContent = `Looking up word ${current}/${total}: "${currentWord}"... (${savedCount} saved)`;
+                }
             },
-            // Auto-save callback - saves each word as it's looked up
+            // Auto-save callback - saves each word as it's looked up (only if not already in Supabase)
             async (result) => {
                 if (result.success) {
-                    const success = await saveWord(result.word, result.definition, result.example);
-                    if (success) {
-                        savedCount++;
-                        batchProgress.textContent = `Looking up... (${savedCount} saved so far)`;
-                        
-                        // Update saved words tab if visible
-                        const savedWordsPanel = document.getElementById('saved-panel');
-                        if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
-                            await displaySavedWords();
+                    // Only save if word wasn't already in Supabase
+                    // (saveWord handles duplicates, but we can skip the call if already from Supabase)
+                    if (!result.fromSupabase) {
+                        const success = await saveWord(result.word, result.definition, result.example);
+                        if (success) {
+                            savedCount++;
+                            
+                            // Update saved words tab if visible
+                            const savedWordsPanel = document.getElementById('saved-panel');
+                            if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
+                                await displaySavedWords();
+                            }
                         }
+                    } else {
+                        // Word already exists in Supabase, count it as already saved
+                        savedCount++;
                     }
                 }
             }
@@ -198,11 +219,17 @@ function displayBatchResults(results, alreadySavedCount = 0) {
     // Display results - successful words are already auto-saved
     batchResultsDiv.innerHTML = results.map((result, index) => {
         if (result.success) {
+            const isReused = result.fromSupabase;
+            const statusBadge = isReused 
+                ? '<span class="word-source-badge" style="background: #3498db; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 8px;">✓ From Collection</span>'
+                : '<span class="word-source-badge" style="background: #27ae60; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 8px;">🆕 New</span>';
+            const saveButtonText = isReused ? '✓ Already Saved' : '✓ Auto-Saved';
+            
             return `
                 <div class="batch-result-card" data-index="${index}">
                     <div class="batch-result-header">
-                        <h4>${result.word}</h4>
-                        <button class="save-btn batch-save-btn" data-index="${index}" disabled style="background: #27ae60;">✓ Auto-Saved</button>
+                        <h4>${result.word}${statusBadge}</h4>
+                        <button class="save-btn batch-save-btn" data-index="${index}" disabled style="background: #27ae60;">${saveButtonText}</button>
                     </div>
                     <p><strong>Definition:</strong> ${result.definition}</p>
                     ${result.example ? `<p class="example-text"><strong>Example:</strong> ${result.example}</p>` : ''}
@@ -222,10 +249,22 @@ function displayBatchResults(results, alreadySavedCount = 0) {
     
     // Add batch actions
     const successCount = results.filter(r => r.success).length;
+    const reusedCount = results.filter(r => r.success && r.fromSupabase).length;
+    const newCount = results.filter(r => r.success && !r.fromSupabase).length;
+    
     if (successCount > 0) {
+        let summaryMessage = '';
+        if (reusedCount > 0 && newCount > 0) {
+            summaryMessage = `✅ ${newCount} new word${newCount > 1 ? 's' : ''} saved, ${reusedCount} word${reusedCount > 1 ? 's' : ''} reused from collection`;
+        } else if (reusedCount > 0) {
+            summaryMessage = `✅ ${reusedCount} word${reusedCount > 1 ? 's' : ''} reused from your collection`;
+        } else {
+            summaryMessage = `✅ ${newCount} word${newCount > 1 ? 's' : ''} auto-saved to your collection`;
+        }
+        
         const actionsHtml = `
             <div class="batch-actions">
-                <p class="auto-save-notice">✅ ${successCount} word${successCount > 1 ? 's' : ''} auto-saved to your collection</p>
+                <p class="auto-save-notice">${summaryMessage}</p>
                 <button id="batchClearBtn" class="batch-clear-btn">Clear Results</button>
             </div>
         `;
