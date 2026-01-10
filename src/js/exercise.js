@@ -10,11 +10,12 @@ export function initExercise() {
     document.getElementById('nextQuestion').addEventListener('click', nextQuestion);
     document.getElementById('restartExercise').addEventListener('click', resetExercise);
 
-    // Allow Enter key to submit answer or go to next question
+    // Allow Enter key to submit answer
     document.getElementById('answerInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             if (!e.target.disabled) {
                 // Input is enabled - submit answer
+                e.stopPropagation(); // Prevent event from bubbling to document listener
                 checkAnswer();
             }
         }
@@ -23,11 +24,11 @@ export function initExercise() {
     // Global Enter key listener for next question
     document.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            const nextBtn = document.getElementById('nextQuestion');
             const answerInput = document.getElementById('answerInput');
+            const exerciseQuiz = document.getElementById('exerciseQuiz');
             
-            // If next button is visible and input is disabled (answer was submitted)
-            if (nextBtn.style.display === 'block' && answerInput.disabled) {
+            // If input is disabled (answer was submitted) and quiz is visible
+            if (answerInput.disabled && exerciseQuiz.style.display === 'block') {
                 nextQuestion();
             }
         }
@@ -75,8 +76,9 @@ function showQuestion() {
     
     document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithBlank}"</em>`;
     
-    // Show the definition
-    document.getElementById('definitionDisplay').textContent = currentWord.definition;
+    // Show the definition with first letter hint
+    const firstLetter = currentWord.word.charAt(0).toUpperCase();
+    document.getElementById('definitionDisplay').textContent = `${currentWord.definition} (${firstLetter})`;
     
     // Reset input and feedback
     const answerInput = document.getElementById('answerInput');
@@ -107,28 +109,40 @@ function checkAnswer() {
     document.getElementById('submitAnswer').style.display = 'none';
     
     if (isCorrect) {
-        feedbackDiv.innerHTML = `
-            <div class="feedback-correct">
-                ✅ Correct! The answer is "<strong>${currentWord.word}</strong>"
-                <div class="press-enter-hint">Press Enter or click Next Question to continue</div>
-            </div>
-        `;
+        // Show the word in the example sentence with highlighting
+        const exampleWithWord = currentWord.example 
+            ? currentWord.example.replace(
+                new RegExp(currentWord.word, 'gi'), 
+                `<mark class="highlight-word">${currentWord.word}</mark>`
+            )
+            : `Example with "<mark class="highlight-word">${currentWord.word}</mark>"`;
+        
+        document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithWord}"</em>`;
+        
+        // No feedback message - user can see the highlighted word
+        feedbackDiv.innerHTML = '';
         answerInput.classList.add('correct-input');
         correctAnswers++;
         updateExerciseProgress();
     } else {
-        feedbackDiv.innerHTML = `
-            <div class="feedback-incorrect">
-                ❌ Incorrect. The correct answer is "<strong>${currentWord.word}</strong>"
-                <div class="press-enter-hint">Press Enter or click Next Question to continue</div>
-            </div>
-        `;
+        // Show the correct word in the example sentence for incorrect answers
+        const exampleWithWord = currentWord.example 
+            ? currentWord.example.replace(
+                new RegExp(currentWord.word, 'gi'), 
+                `<mark class="highlight-word">${currentWord.word}</mark>`
+            )
+            : `Example with "<mark class="highlight-word">${currentWord.word}</mark>"`;
+        
+        document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithWord}"</em>`;
+        
+        // No feedback message - user can see the highlighted word
+        feedbackDiv.innerHTML = '';
         answerInput.classList.add('incorrect-input');
     }
     
     currentQuestionIndex++;
     updateExerciseProgress();
-    document.getElementById('nextQuestion').style.display = 'block';
+    // Keep next button hidden - user must press Enter to continue
 }
 
 function nextQuestion() {

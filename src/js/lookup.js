@@ -43,9 +43,17 @@ async function lookupWord(word) {
         const saveBtn = document.getElementById('saveWordBtn');
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
+                // Save word to localStorage (fast operation)
                 saveWord(result.word, result.definition, result.example);
-                displaySavedWords();
                 
+                // Only update the UI if user is on the saved words tab
+                // This prevents unnecessary DOM manipulation when user is on lookup tab
+                const savedWordsPanel = document.getElementById('saved-panel');
+                if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
+                    displaySavedWords();
+                }
+                
+                // Provide immediate visual feedback
                 saveBtn.innerHTML = '✓ Saved!';
                 saveBtn.style.background = '#27ae60';
                 saveBtn.disabled = true;

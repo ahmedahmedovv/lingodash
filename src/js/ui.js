@@ -45,6 +45,11 @@ export function initTabs() {
             // Add active class to clicked button and corresponding panel
             button.classList.add('active');
             document.getElementById(`${targetTab}-panel`).classList.add('active');
+            
+            // Update saved words list when switching to saved words tab
+            if (targetTab === 'saved') {
+                displaySavedWords();
+            }
         });
     });
 }
