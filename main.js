@@ -151,6 +151,26 @@ textInput.addEventListener('keypress', (e) => {
     }
 });
 
+// Tab switching functionality
+function initTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetTab = button.getAttribute('data-tab');
+            
+            // Remove active class from all buttons and panels
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabPanels.forEach(panel => panel.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding panel
+            button.classList.add('active');
+            document.getElementById(`${targetTab}-panel`).classList.add('active');
+        });
+    });
+}
+
 // Clear history button
 if (clearHistoryBtn) {
     clearHistoryBtn.addEventListener('click', clearAllWords);
@@ -163,5 +183,121 @@ window.saveWordManually = (word, definition) => {
     alert('Word saved!');
 };
 
-// Display saved words on page load
+// Exercise functionality
+let exerciseWords = [];
+let currentQuestionIndex = 0;
+let correctAnswers = 0;
+
+function startExercise() {
+    const savedWords = getSavedWords();
+    
+    if (savedWords.length < 3) {
+        alert('You need at least 3 saved words to start the exercise!');
+        return;
+    }
+    
+    // Shuffle words for random order
+    exerciseWords = savedWords.sort(() => Math.random() - 0.5);
+    currentQuestionIndex = 0;
+    correctAnswers = 0;
+    
+    document.getElementById('exerciseContent').style.display = 'none';
+    document.getElementById('exerciseQuiz').style.display = 'block';
+    document.getElementById('exerciseResults').style.display = 'none';
+    
+    updateExerciseProgress();
+    showQuestion();
+}
+
+function updateExerciseProgress() {
+    document.getElementById('exerciseScore').textContent = `Score: ${correctAnswers}`;
+    document.getElementById('exerciseProgress').textContent = `${currentQuestionIndex}/${exerciseWords.length}`;
+}
+
+function showQuestion() {
+    if (currentQuestionIndex >= exerciseWords.length) {
+        showResults();
+        return;
+    }
+    
+    const currentWord = exerciseWords[currentQuestionIndex];
+    document.getElementById('questionWord').textContent = currentWord.word;
+    
+    // Generate answer options (1 correct + 3 random wrong answers)
+    const options = [currentWord];
+    const otherWords = exerciseWords.filter(w => w.word !== currentWord.word);
+    
+    // Add 3 random wrong answers
+    while (options.length < 4 && otherWords.length > 0) {
+        const randomIndex = Math.floor(Math.random() * otherWords.length);
+        options.push(otherWords.splice(randomIndex, 1)[0]);
+    }
+    
+    // Shuffle options
+    options.sort(() => Math.random() - 0.5);
+    
+    // Display options
+    const answerOptionsDiv = document.getElementById('answerOptions');
+    answerOptionsDiv.innerHTML = options.map((option, index) => `
+        <button class="answer-option" onclick="checkAnswer('${option.word}', '${currentWord.word}', ${index})">
+            ${option.definition}
+        </button>
+    `).join('');
+    
+    document.getElementById('nextQuestion').style.display = 'none';
+}
+
+function checkAnswer(selectedWord, correctWord, optionIndex) {
+    const options = document.querySelectorAll('.answer-option');
+    const isCorrect = selectedWord === correctWord;
+    
+    // Disable all buttons
+    options.forEach(btn => btn.disabled = true);
+    
+    if (isCorrect) {
+        options[optionIndex].classList.add('correct');
+        correctAnswers++;
+        updateExerciseProgress();
+    } else {
+        options[optionIndex].classList.add('incorrect');
+        // Highlight the correct answer
+        options.forEach((btn, idx) => {
+            if (btn.textContent.trim() === exerciseWords[currentQuestionIndex].definition) {
+                btn.classList.add('correct');
+            }
+        });
+    }
+    
+    currentQuestionIndex++;
+    updateExerciseProgress();
+    document.getElementById('nextQuestion').style.display = 'block';
+}
+
+function showResults() {
+    document.getElementById('exerciseQuiz').style.display = 'none';
+    document.getElementById('exerciseResults').style.display = 'block';
+    
+    const percentage = Math.round((correctAnswers / exerciseWords.length) * 100);
+    document.getElementById('finalScore').textContent = `${correctAnswers}/${exerciseWords.length} (${percentage}%)`;
+}
+
+function resetExercise() {
+    document.getElementById('exerciseContent').style.display = 'block';
+    document.getElementById('exerciseQuiz').style.display = 'none';
+    document.getElementById('exerciseResults').style.display = 'none';
+    correctAnswers = 0;
+    currentQuestionIndex = 0;
+    updateExerciseProgress();
+}
+
+// Event listeners for exercise
+document.getElementById('startExercise').addEventListener('click', startExercise);
+document.getElementById('nextQuestion').addEventListener('click', showQuestion);
+document.getElementById('restartExercise').addEventListener('click', resetExercise);
+
+// Make checkAnswer available globally
+window.checkAnswer = checkAnswer;
+
+// Initialize on page load
+initTabs();
 displaySavedWords();

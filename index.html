@@ -8,21 +8,75 @@
 </head>
 <body>
     <div class="container">
-        <div class="input-wrapper">
-            <h1>LingoDash</h1>
-            <input type="text" id="textInput" placeholder="Type a word...">
-            <div id="definitionBox" class="definition-box">
-                <div id="definitionContent"></div>
-            </div>
-        </div>
-        
-        <div class="saved-words-section">
-            <div class="saved-words-header">
-                <h2>📚 Saved Words</h2>
-                <button id="clearHistory" class="clear-btn">Clear All</button>
-            </div>
-            <div id="savedWordsList" class="saved-words-list">
-                <p class="empty-state">No saved words yet. Look up a word to get started!</p>
+        <div class="app-wrapper">
+            <h1 class="main-title">LingoDash</h1>
+            
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-btn active" data-tab="lookup">🔍 Word Lookup</button>
+                    <button class="tab-btn" data-tab="saved">📚 Saved Words</button>
+                    <button class="tab-btn" data-tab="exercise">💪 Exercise</button>
+                </div>
+                
+                <div class="tab-content">
+                    <!-- Lookup Tab -->
+                    <div class="tab-panel active" id="lookup-panel">
+                        <div class="input-wrapper">
+                            <input type="text" id="textInput" placeholder="Type a word...">
+                            <div id="definitionBox" class="definition-box">
+                                <div id="definitionContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Saved Words Tab -->
+                    <div class="tab-panel" id="saved-panel">
+                        <div class="saved-words-section">
+                            <div class="saved-words-header">
+                                <h2>Your Vocabulary</h2>
+                                <button id="clearHistory" class="clear-btn">Clear All</button>
+                            </div>
+                            <div id="savedWordsList" class="saved-words-list">
+                                <p class="empty-state">No saved words yet. Look up a word to get started!</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Exercise Tab -->
+                    <div class="tab-panel" id="exercise-panel">
+                        <div class="exercise-section">
+                            <div class="exercise-header">
+                                <h2>Practice Your Vocabulary</h2>
+                                <div class="exercise-stats">
+                                    <span id="exerciseScore">Score: 0</span>
+                                    <span id="exerciseProgress">0/0</span>
+                                </div>
+                            </div>
+                            
+                            <div id="exerciseContent" class="exercise-content">
+                                <div class="exercise-start">
+                                    <p class="exercise-info">Test your knowledge of saved words!</p>
+                                    <button id="startExercise" class="start-btn">Start Exercise</button>
+                                </div>
+                            </div>
+                            
+                            <div id="exerciseQuiz" class="exercise-quiz" style="display: none;">
+                                <div class="question-card">
+                                    <h3 id="questionWord" class="question-word"></h3>
+                                    <p class="question-prompt">What is the definition?</p>
+                                    <div id="answerOptions" class="answer-options"></div>
+                                </div>
+                                <button id="nextQuestion" class="next-btn" style="display: none;">Next Question</button>
+                            </div>
+                            
+                            <div id="exerciseResults" class="exercise-results" style="display: none;">
+                                <h3>Exercise Complete! 🎉</h3>
+                                <p class="final-score">Your Score: <span id="finalScore"></span></p>
+                                <button id="restartExercise" class="start-btn">Try Again</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
