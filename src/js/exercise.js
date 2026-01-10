@@ -1,4 +1,4 @@
-import { getSavedWords } from './storage.js';
+import { getSavedWords, getWordsDueForReview, updateWordReview } from './storage.js';
 
 let exerciseWords = [];
 let currentQuestionIndex = 0;
@@ -48,8 +48,34 @@ function startExercise() {
         return;
     }
     
-    // Shuffle words for random order
-    exerciseWords = savedWords.sort(() => Math.random() - 0.5);
+    // Get words due for review (uses spaced repetition)
+    let dueWords = getWordsDueForReview();
+    
+    // If less than 5 words are due, add some random words to make it more interesting
+    if (dueWords.length < 5 && savedWords.length > dueWords.length) {
+        const notDueWords = savedWords.filter(word => 
+            !dueWords.find(dueWord => dueWord.word.toLowerCase() === word.word.toLowerCase())
+        );
+        const additionalWords = notDueWords
+            .sort(() => Math.random() - 0.5)
+            .slice(0, Math.min(5 - dueWords.length, notDueWords.length));
+        
+        exerciseWords = [...dueWords, ...additionalWords];
+    } else if (dueWords.length === 0) {
+        // No words due, use random selection
+        exerciseWords = savedWords.sort(() => Math.random() - 0.5).slice(0, 10);
+    } else {
+        exerciseWords = dueWords;
+    }
+    
+    // Add slight randomization while keeping priority on due words
+    const priorityWords = exerciseWords.slice(0, Math.ceil(exerciseWords.length / 2));
+    const otherWords = exerciseWords.slice(Math.ceil(exerciseWords.length / 2));
+    exerciseWords = [
+        ...priorityWords.sort(() => Math.random() - 0.5),
+        ...otherWords.sort(() => Math.random() - 0.5)
+    ];
+    
     currentQuestionIndex = 0;
     correctAnswers = 0;
     
@@ -107,6 +133,9 @@ function checkAnswer() {
     // Disable input and submit button
     answerInput.disabled = true;
     document.getElementById('submitAnswer').style.display = 'none';
+    
+    // Update spaced repetition data
+    updateWordReview(currentWord.word, isCorrect);
     
     if (isCorrect) {
         // Show the word in the example sentence with highlighting

@@ -7,21 +7,115 @@ export function getSavedWords() {
 export function saveWord(word, definition, example = '') {
     const words = getSavedWords();
     
-    // Check if word already exists and remove it (to avoid duplicates)
-    const filteredWords = words.filter(item => item.word.toLowerCase() !== word.toLowerCase());
+    // Check if word already exists
+    const existingWordIndex = words.findIndex(item => item.word.toLowerCase() === word.toLowerCase());
     
-    // Add new word at the beginning
-    filteredWords.unshift({
-        word: word,
-        definition: definition,
-        example: example || `Example sentence with "${word}" will be added here.`,
-        timestamp: new Date().toISOString()
-    });
+    if (existingWordIndex !== -1) {
+        // Update existing word but preserve spaced repetition data
+        words[existingWordIndex] = {
+            ...words[existingWordIndex],
+            definition: definition,
+            example: example || words[existingWordIndex].example,
+            timestamp: new Date().toISOString()
+        };
+    } else {
+        // Add new word at the beginning with initial spaced repetition data
+        words.unshift({
+            word: word,
+            definition: definition,
+            example: example || `Example sentence with "${word}" will be added here.`,
+            timestamp: new Date().toISOString(),
+            // Spaced repetition data
+            interval: 0, // Days until next review (0 = new word, needs immediate review)
+            easeFactor: 2.5, // Multiplier for interval increase
+            nextReview: new Date().toISOString(), // Due immediately for new words
+            reviewCount: 0,
+            correctCount: 0
+        });
+    }
     
     // Keep only last 50 words
-    const limitedWords = filteredWords.slice(0, 50);
+    const limitedWords = words.slice(0, 50);
     
     localStorage.setItem('lingodash_words', JSON.stringify(limitedWords));
+}
+
+// Update spaced repetition data after reviewing a word
+export function updateWordReview(word, isCorrect) {
+    const words = getSavedWords();
+    const wordIndex = words.findIndex(item => item.word.toLowerCase() === word.toLowerCase());
+    
+    if (wordIndex === -1) return;
+    
+    const wordData = words[wordIndex];
+    
+    // Initialize spaced repetition data if missing (for backwards compatibility)
+    if (wordData.interval === undefined) {
+        wordData.interval = 0;
+        wordData.easeFactor = 2.5;
+        wordData.reviewCount = 0;
+        wordData.correctCount = 0;
+    }
+    
+    wordData.reviewCount = (wordData.reviewCount || 0) + 1;
+    
+    if (isCorrect) {
+        wordData.correctCount = (wordData.correctCount || 0) + 1;
+        
+        // Increase interval based on current level
+        if (wordData.interval === 0) {
+            wordData.interval = 1; // First correct: review tomorrow
+        } else if (wordData.interval === 1) {
+            wordData.interval = 3; // Second correct: review in 3 days
+        } else {
+            // Subsequent correct answers: multiply by ease factor
+            wordData.interval = Math.round(wordData.interval * wordData.easeFactor);
+        }
+        
+        // Cap interval at 365 days (1 year)
+        wordData.interval = Math.min(wordData.interval, 365);
+        
+        // Increase ease factor slightly for consistent success
+        wordData.easeFactor = Math.min(wordData.easeFactor + 0.1, 3.0);
+    } else {
+        // Incorrect answer: reset to short interval
+        wordData.interval = 0; // Review again in this session
+        
+        // Decrease ease factor for struggled words
+        wordData.easeFactor = Math.max(wordData.easeFactor - 0.2, 1.3);
+    }
+    
+    // Calculate next review date
+    const nextReviewDate = new Date();
+    nextReviewDate.setDate(nextReviewDate.getDate() + wordData.interval);
+    wordData.nextReview = nextReviewDate.toISOString();
+    
+    words[wordIndex] = wordData;
+    localStorage.setItem('lingodash_words', JSON.stringify(words));
+}
+
+// Get words that are due for review
+export function getWordsDueForReview() {
+    const allWords = getSavedWords();
+    const now = new Date();
+    
+    // Filter words that are due for review
+    const dueWords = allWords.filter(word => {
+        // Initialize spaced repetition data if missing
+        if (word.nextReview === undefined) {
+            return true; // Include words without review data
+        }
+        return new Date(word.nextReview) <= now;
+    });
+    
+    // Sort by next review date (most overdue first)
+    dueWords.sort((a, b) => {
+        const aDate = a.nextReview ? new Date(a.nextReview) : new Date(0);
+        const bDate = b.nextReview ? new Date(b.nextReview) : new Date(0);
+        return aDate - bDate;
+    });
+    
+    return dueWords;
 }
 
 export function deleteWord(word) {

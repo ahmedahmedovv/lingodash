@@ -9,6 +9,7 @@ An AI-powered vocabulary learning application with word lookup, saving, and exer
 - 📚 **Saved Words**: View your vocabulary collection
 - 💪 **Exercise Mode**: Test your knowledge with interactive quizzes
 - 🎯 **Type-to-Learn**: Practice by typing the correct word
+- 🧠 **Spaced Repetition**: Intelligent scheduling prioritizes words you're about to forget
 
 ## Tech Stack
 
@@ -81,6 +82,7 @@ npm run coverage      # Generate coverage report
 
 See [TEST_GUIDE.md](./TEST_GUIDE.md) for detailed testing documentation.
 See [PERFORMANCE.md](./PERFORMANCE.md) for performance testing guide.
+See [SPACED_REPETITION.md](./SPACED_REPETITION.md) for spaced repetition system details.
 
 ## Usage
 
@@ -88,6 +90,9 @@ See [PERFORMANCE.md](./PERFORMANCE.md) for performance testing guide.
 2. **Save Words**: Click the "💾 Save Word" button to add it to your vocabulary
 3. **View Saved Words**: Switch to the "📚 Saved Words" tab
 4. **Practice**: Go to "💪 Exercise" tab and test your knowledge
+   - The system uses **spaced repetition** to prioritize words that need review
+   - Words you struggle with appear more frequently
+   - Successfully learned words appear at increasing intervals (1 day → 3 days → 1 week → etc.)
 
 ## API Configuration
 
