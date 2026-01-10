@@ -4,8 +4,70 @@ const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 const textInput = document.getElementById('textInput');
 const definitionBox = document.getElementById('definitionBox');
 const definitionContent = document.getElementById('definitionContent');
+const savedWordsList = document.getElementById('savedWordsList');
+const clearHistoryBtn = document.getElementById('clearHistory');
 
 let debounceTimeout;
+
+// LocalStorage functions
+function getSavedWords() {
+    const saved = localStorage.getItem('lingodash_words');
+    return saved ? JSON.parse(saved) : [];
+}
+
+function saveWord(word, definition) {
+    const words = getSavedWords();
+    
+    // Check if word already exists and remove it (to avoid duplicates)
+    const filteredWords = words.filter(item => item.word.toLowerCase() !== word.toLowerCase());
+    
+    // Add new word at the beginning
+    filteredWords.unshift({
+        word: word,
+        definition: definition,
+        timestamp: new Date().toISOString()
+    });
+    
+    // Keep only last 50 words
+    const limitedWords = filteredWords.slice(0, 50);
+    
+    localStorage.setItem('lingodash_words', JSON.stringify(limitedWords));
+    displaySavedWords();
+}
+
+function deleteWord(word) {
+    const words = getSavedWords();
+    const filteredWords = words.filter(item => item.word.toLowerCase() !== word.toLowerCase());
+    localStorage.setItem('lingodash_words', JSON.stringify(filteredWords));
+    displaySavedWords();
+}
+
+function clearAllWords() {
+    if (confirm('Are you sure you want to clear all saved words?')) {
+        localStorage.removeItem('lingodash_words');
+        displaySavedWords();
+    }
+}
+
+function displaySavedWords() {
+    const words = getSavedWords();
+    
+    if (words.length === 0) {
+        savedWordsList.innerHTML = '<p class="empty-state">No saved words yet. Look up a word to get started!</p>';
+        return;
+    }
+    
+    savedWordsList.innerHTML = words.map(item => `
+        <div class="saved-word-item">
+            <div class="saved-word-header">
+                <h4>${item.word}</h4>
+                <button class="delete-btn" onclick="deleteWord('${item.word}')" title="Delete">×</button>
+            </div>
+            <p class="saved-definition">${item.definition}</p>
+            <span class="saved-timestamp">${new Date(item.timestamp).toLocaleDateString()}</span>
+        </div>
+    `).join('');
+}
 
 async function getWordDefinition(word) {
     if (!word.trim()) {
@@ -46,7 +108,11 @@ async function getWordDefinition(word) {
         definitionContent.innerHTML = `
             <h3>${word}</h3>
             <p>${definition}</p>
+            <button class="save-btn" onclick="saveWordManually('${word}', \`${definition.replace(/`/g, '\\`').replace(/'/g, "\\'")}\`)">💾 Save Word</button>
         `;
+        
+        // Automatically save the word to localStorage
+        saveWord(word, definition);
     } catch (error) {
         console.error('Error fetching definition:', error);
         let errorMessage = error.message;
@@ -84,3 +150,18 @@ textInput.addEventListener('keypress', (e) => {
         getWordDefinition(e.target.value.trim());
     }
 });
+
+// Clear history button
+if (clearHistoryBtn) {
+    clearHistoryBtn.addEventListener('click', clearAllWords);
+}
+
+// Make functions available globally for inline onclick handlers
+window.deleteWord = deleteWord;
+window.saveWordManually = (word, definition) => {
+    saveWord(word, definition);
+    alert('Word saved!');
+};
+
+// Display saved words on page load
+displaySavedWords();
