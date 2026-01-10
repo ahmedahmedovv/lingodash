@@ -77,13 +77,22 @@ body {
 }
 
 .tab-content {
-    min-height: 400px;
+    height: 500px;
+    overflow: hidden;
+    position: relative;
 }
 
 .tab-panel {
     display: none;
     padding: 2rem;
     animation: fadeIn 0.3s ease;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .tab-panel.active {
@@ -241,7 +250,7 @@ input[type="text"]::placeholder {
 }
 
 .saved-words-list {
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
 }
 
@@ -366,7 +375,7 @@ input[type="text"]::placeholder {
 }
 
 .exercise-content {
-    min-height: 300px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -410,7 +419,10 @@ input[type="text"]::placeholder {
 }
 
 .exercise-quiz {
-    min-height: 300px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .question-card-minimal {
