@@ -69,7 +69,13 @@
                             
                             <div id="exerciseQuiz" class="exercise-quiz" style="display: none;">
                                 <div class="question-card-minimal">
-                                    <div id="wordDueInfo" class="word-due-info"></div>
+                                    <div class="question-card-header">
+                                        <div id="wordDueInfo" class="word-due-info"></div>
+                                        <div class="exercise-card-actions" id="exerciseCardActions" style="display: none;">
+                                            <button class="exercise-edit-btn" id="exerciseEditBtn" title="Edit">&#9998;</button>
+                                            <button class="exercise-delete-btn" id="exerciseDeleteBtn" title="Delete">&times;</button>
+                                        </div>
+                                    </div>
                                     <div id="exampleSentence" class="example-sentence"></div>
                                     <div id="definitionDisplay" class="definition-display-minimal"></div>
                                     <div class="answer-section">

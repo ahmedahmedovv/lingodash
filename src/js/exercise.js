@@ -1,4 +1,5 @@
-import { getSavedWords, getWordsDueForReview, updateWordReview } from './storage.js';
+import { getSavedWords, getWordsDueForReview, updateWordReview, deleteWord, updateWord } from './storage.js';
+import { showEditModal, displaySavedWords } from './ui.js';
 
 let exerciseWords = [];
 let currentQuestionIndex = 0;
@@ -21,19 +22,25 @@ export function initExercise() {
             }
         }
     });
-    
+
     // Global Enter key listener for next question
     document.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             const answerInput = document.getElementById('answerInput');
             const exerciseQuiz = document.getElementById('exerciseQuiz');
-            
+
             // If input is disabled (answer was submitted) and quiz is visible
             if (answerInput.disabled && exerciseQuiz.style.display === 'block') {
                 nextQuestion();
             }
         }
     });
+
+    // Edit button handler
+    document.getElementById('exerciseEditBtn').addEventListener('click', handleEditWord);
+
+    // Delete button handler
+    document.getElementById('exerciseDeleteBtn').addEventListener('click', handleDeleteWord);
 }
 
 function updateExerciseProgress() {
@@ -156,6 +163,9 @@ function showQuestion() {
     document.getElementById('answerFeedback').innerHTML = '';
     document.getElementById('nextQuestion').style.display = 'none';
 
+    // Hide edit/delete buttons until answer is submitted
+    document.getElementById('exerciseCardActions').style.display = 'none';
+
     // Remove any existing sparkle container
     const existingSparkles = document.querySelector('.sparkle-container');
     if (existingSparkles) {
@@ -264,6 +274,9 @@ async function checkAnswer() {
         hintText.textContent = 'Press Enter to continue →';
         hintText.classList.add('continue-hint');
     }
+
+    // Show edit/delete buttons after answer is submitted
+    document.getElementById('exerciseCardActions').style.display = 'flex';
     
     // Update spaced repetition data
     await updateWordReview(currentWord.word, isCorrect);
@@ -350,6 +363,101 @@ function showResults() {
             ${correctAnswers} correct out of ${totalAttempts} attempts (${accuracy}%)
         </div>
     `;
+}
+
+function getCurrentWord() {
+    // Get the word that was just answered (currentQuestionIndex was incremented after checkAnswer)
+    return exerciseWords[currentQuestionIndex - 1];
+}
+
+async function handleDeleteWord() {
+    const currentWord = getCurrentWord();
+    if (!currentWord) return;
+
+    const confirmed = confirm(`Delete "${currentWord.word}" from your vocabulary?`);
+    if (!confirmed) return;
+
+    const success = await deleteWord(currentWord.word);
+    if (success) {
+        // Remove all instances of this word from the exercise queue
+        exerciseWords = exerciseWords.filter(w =>
+            w.word.toLowerCase() !== currentWord.word.toLowerCase()
+        );
+
+        // Remove from mastered set if present
+        masteredWords.delete(currentWord.word.toLowerCase());
+
+        // Adjust currentQuestionIndex since we removed the word
+        currentQuestionIndex--;
+
+        // Update saved words display
+        await displaySavedWords();
+
+        // Check if we still have words to continue
+        if (exerciseWords.length < 1) {
+            alert('No more words in exercise. Returning to start.');
+            resetExercise();
+        } else {
+            // Move to next question
+            nextQuestion();
+        }
+    } else {
+        alert('Failed to delete word. Please try again.');
+    }
+}
+
+function handleEditWord() {
+    const currentWord = getCurrentWord();
+    if (!currentWord) return;
+
+    // Show the edit modal (imported from ui.js)
+    showEditModal(currentWord.word, currentWord.definition, currentWord.example || '');
+
+    // After modal closes and word is updated, we need to refresh the display
+    // The modal will handle updating the database
+    // We'll listen for when the modal is removed to refresh the current question display
+    const checkModalClosed = setInterval(() => {
+        const modal = document.querySelector('.edit-overlay');
+        if (!modal) {
+            clearInterval(checkModalClosed);
+            // Refresh the current word data from storage
+            refreshCurrentWord();
+        }
+    }, 100);
+}
+
+async function refreshCurrentWord() {
+    const currentWord = getCurrentWord();
+    if (!currentWord) return;
+
+    // Fetch updated words from storage
+    const savedWords = await getSavedWords();
+    const updatedWord = savedWords.find(w =>
+        w.word.toLowerCase() === currentWord.word.toLowerCase() ||
+        w.id === currentWord.id
+    );
+
+    if (updatedWord) {
+        // Update the word in exerciseWords array
+        const index = currentQuestionIndex - 1;
+        if (index >= 0 && index < exerciseWords.length) {
+            exerciseWords[index] = updatedWord;
+
+            // Update the display with new data
+            const exampleWithWord = updatedWord.example
+                ? updatedWord.example.replace(
+                    new RegExp(updatedWord.word, 'gi'),
+                    `<mark class="highlight-word">${updatedWord.word}</mark>`
+                )
+                : `Example with "<mark class="highlight-word">${updatedWord.word}</mark>"`;
+
+            document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithWord}"</em>`;
+            document.getElementById('definitionDisplay').textContent = `${updatedWord.definition} (${updatedWord.word.charAt(0).toUpperCase()})`;
+        }
+    }
+
+    // Update saved words display
+    await displaySavedWords();
 }
 
 function createSparkles() {

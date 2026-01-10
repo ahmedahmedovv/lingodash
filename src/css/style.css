@@ -485,6 +485,56 @@ input[type="text"]::placeholder {
     position: relative;
 }
 
+.question-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.exercise-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.exercise-edit-btn,
+.exercise-delete-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.exercise-edit-btn {
+    color: #8B7355;
+    font-size: 1rem;
+}
+
+.exercise-edit-btn:hover {
+    background: #8B7355;
+    color: white;
+    opacity: 1;
+}
+
+.exercise-delete-btn {
+    color: #A0522D;
+    font-size: 1.3rem;
+}
+
+.exercise-delete-btn:hover {
+    background: #A0522D;
+    color: white;
+    opacity: 1;
+}
+
 /* Slide-in animation for new questions */
 .question-card-minimal.slide-in {
     animation: questionSlideIn 0.4s ease-out;
