@@ -451,88 +451,85 @@ input[type="text"]::placeholder {
 
 .exercise-start {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
 }
 
-.exercise-info {
+.exercise-title {
     color: #3E2723;
-    font-size: 1.6rem;
-    margin-bottom: 0.75rem;
-    font-weight: 600;
-}
-
-.exercise-subinfo {
-    color: #6D5C4D;
-    font-size: 1.15rem;
-    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: -0.3px;
 }
 
 .session-size-selector {
-    margin: 1.5rem 0 2.5rem;
-    padding: 1rem;
-    background: #F5F1E8;
-    border-radius: 8px;
-    display: inline-block;
-}
-
-.session-size-label {
-    display: block;
-    color: #6D5C4D;
-    font-size: 1rem;
-    font-weight: 500;
-    margin-bottom: 0.75rem;
+    margin: 0;
 }
 
 .session-size-options {
     display: flex;
-    gap: 1.5rem;
+    gap: 0.75rem;
     justify-content: center;
     align-items: center;
 }
 
 .session-size-option {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
     cursor: pointer;
-    color: #3E2723;
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: all 0.2s ease;
-}
-
-.session-size-option:hover {
-    background: rgba(139, 115, 85, 0.1);
+    position: relative;
 }
 
 .session-size-option input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #8B7355;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .session-size-option span {
+    display: inline-block;
+    padding: 0.5rem 1.25rem;
+    color: #6D5C4D;
+    font-size: 1rem;
+    font-weight: 500;
+    border: 1px solid #D4C5B0;
+    border-radius: 6px;
+    background: transparent;
+    transition: all 0.2s ease;
     user-select: none;
 }
 
+.session-size-option:hover span {
+    border-color: #8B7355;
+    color: #8B7355;
+}
+
+.session-size-option input[type="radio"]:checked + span {
+    background: #8B7355;
+    border-color: #8B7355;
+    color: white;
+}
+
 .start-btn {
-    padding: 1.25rem 2.5rem;
+    padding: 0.875rem 2rem;
     background: #8B7355;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1.3rem;
-    font-weight: 600;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
+    transition: background 0.2s ease;
+    margin-top: 0.5rem;
 }
 
 .start-btn:hover {
     background: #7a6349;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(139, 115, 85, 0.4);
+}
+
+.start-btn:active {
+    background: #6b563f;
 }
 
 .exercise-quiz {

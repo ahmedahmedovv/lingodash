@@ -176,22 +176,20 @@ function renderExerciseStartScreen() {
     
     exerciseContent.innerHTML = `
         <div class="exercise-start">
-            <p class="exercise-info">📝 Read the definition and type the correct word!</p>
-            <p class="exercise-subinfo">Test your vocabulary by typing answers</p>
+            <p class="exercise-title">Vocabulary Practice</p>
             <div class="session-size-selector">
-                <label class="session-size-label">Words per session:</label>
                 <div class="session-size-options">
                     <label class="session-size-option">
                         <input type="radio" name="sessionSize" value="25" id="sessionSize25" ${savedSize === 25 ? 'checked' : ''}>
-                        <span>25 words</span>
+                        <span>25</span>
                     </label>
                     <label class="session-size-option">
                         <input type="radio" name="sessionSize" value="50" id="sessionSize50" ${savedSize === 50 ? 'checked' : ''}>
-                        <span>50 words</span>
+                        <span>50</span>
                     </label>
                 </div>
             </div>
-            <button id="startExercise" class="start-btn">Start Exercise</button>
+            <button id="startExercise" class="start-btn">Start</button>
         </div>
     `;
     
