@@ -1074,9 +1074,13 @@ input[type="text"]::placeholder {
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    max-width: 500px;
+    max-width: 550px;
     width: 90%;
     animation: slideIn 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .edit-modal h3 {
@@ -1105,8 +1109,10 @@ input[type="text"]::placeholder {
     font-size: 0.9rem;
 }
 
+.edit-modal input[type="text"],
 .edit-field input,
 .edit-field textarea {
+    width: 100%;
     padding: 0.75rem 1rem;
     border: 2px solid #D4C5B0;
     border-radius: 6px;
@@ -1114,6 +1120,7 @@ input[type="text"]::placeholder {
     font-family: inherit;
     transition: all 0.2s ease;
     resize: vertical;
+    box-sizing: border-box;
 }
 
 .edit-field input:focus,
