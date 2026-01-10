@@ -42,16 +42,28 @@ function updateExerciseProgress() {
     // Kept for internal tracking
 }
 
-function startExercise() {
-    const savedWords = getSavedWords();
+async function startExercise() {
+    // Show loading state
+    const exerciseContent = document.getElementById('exerciseContent');
+    exerciseContent.innerHTML = '<p class="loading">Loading words...</p>';
+    
+    const savedWords = await getSavedWords();
     
     if (savedWords.length < 3) {
-        alert('You need at least 3 saved words to start the exercise!');
+        exerciseContent.innerHTML = '<p class="error">You need at least 3 saved words to start the exercise!</p>';
+        setTimeout(() => {
+            exerciseContent.innerHTML = `
+                <h2>Practice Your Words</h2>
+                <p>Test your vocabulary knowledge with spaced repetition exercises.</p>
+                <button id="startExercise" class="primary-btn">Start Exercise</button>
+            `;
+            document.getElementById('startExercise').addEventListener('click', startExercise);
+        }, 3000);
         return;
     }
     
     // Get words due for review (uses spaced repetition)
-    let dueWords = getWordsDueForReview();
+    let dueWords = await getWordsDueForReview();
     
     // If less than 5 words are due, add some random words to make it more interesting
     if (dueWords.length < 5 && savedWords.length > dueWords.length) {
@@ -82,6 +94,13 @@ function startExercise() {
     correctAnswers = 0;
     masteredWords.clear(); // Reset mastered words
     totalAttempts = 0; // Reset attempts counter
+    
+    // Reset the exercise content HTML
+    exerciseContent.innerHTML = `
+        <h2>Practice Your Words</h2>
+        <p>Test your vocabulary knowledge with spaced repetition exercises.</p>
+        <button id="startExercise" class="primary-btn">Start Exercise</button>
+    `;
     
     document.getElementById('exerciseContent').style.display = 'none';
     document.getElementById('exerciseQuiz').style.display = 'block';
@@ -202,7 +221,7 @@ function displayWordStats(word) {
     statsDiv.classList.add('visible');
 }
 
-function checkAnswer() {
+async function checkAnswer() {
     const answerInput = document.getElementById('answerInput');
     const userAnswer = answerInput.value.trim().toLowerCase();
     const currentWord = exerciseWords[currentQuestionIndex];
@@ -223,7 +242,7 @@ function checkAnswer() {
     document.getElementById('submitAnswer').style.display = 'none';
     
     // Update spaced repetition data
-    updateWordReview(currentWord.word, isCorrect);
+    await updateWordReview(currentWord.word, isCorrect);
     
     // Don't show word statistics - keeping UI minimal
     // displayWordStats(currentWord);

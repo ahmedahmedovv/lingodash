@@ -1,8 +1,12 @@
 import { getSavedWords, deleteWord, exportWords } from './storage.js';
 
-export function displaySavedWords() {
+export async function displaySavedWords() {
     const savedWordsList = document.getElementById('savedWordsList');
-    const words = getSavedWords();
+    
+    // Show loading state
+    savedWordsList.innerHTML = '<p class="loading">Loading words...</p>';
+    
+    const words = await getSavedWords();
     
     if (words.length === 0) {
         savedWordsList.innerHTML = '<p class="empty-state">No saved words yet. Look up a word to get started!</p>';
@@ -22,10 +26,14 @@ export function displaySavedWords() {
     
     // Add event listeners for delete buttons
     document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
             const word = e.target.getAttribute('data-word');
-            deleteWord(word);
-            displaySavedWords();
+            const success = await deleteWord(word);
+            if (success) {
+                await displaySavedWords();
+            } else {
+                alert('Failed to delete word. Please try again.');
+            }
         });
     });
 }

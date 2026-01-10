@@ -15,7 +15,9 @@
     "test:all": "vitest run",
     "coverage": "vitest run --coverage"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@supabase/supabase-js": "^2.90.1"
+  },
   "devDependencies": {
     "vite": "^5.0.0"
   }

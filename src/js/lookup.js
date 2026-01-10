@@ -86,27 +86,41 @@ async function lookupWord(word) {
         // Add event listener for save button
         const saveBtn = document.getElementById('saveWordBtn');
         if (saveBtn) {
-            saveBtn.addEventListener('click', () => {
-                // Save word to localStorage (fast operation)
-                saveWord(result.word, result.definition, result.example);
-                
-                // Only update the UI if user is on the saved words tab
-                // This prevents unnecessary DOM manipulation when user is on lookup tab
-                const savedWordsPanel = document.getElementById('saved-panel');
-                if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
-                    displaySavedWords();
-                }
-                
-                // Provide immediate visual feedback
-                saveBtn.innerHTML = '✓ Saved!';
-                saveBtn.style.background = '#27ae60';
+            saveBtn.addEventListener('click', async () => {
+                // Save word to Supabase (async operation)
+                saveBtn.innerHTML = '💾 Saving...';
                 saveBtn.disabled = true;
                 
-                setTimeout(() => {
-                    saveBtn.innerHTML = '💾 Save Word';
-                    saveBtn.style.background = '';
-                    saveBtn.disabled = false;
-                }, 2000);
+                const success = await saveWord(result.word, result.definition, result.example);
+                
+                if (success) {
+                    // Only update the UI if user is on the saved words tab
+                    // This prevents unnecessary DOM manipulation when user is on lookup tab
+                    const savedWordsPanel = document.getElementById('saved-panel');
+                    if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
+                        await displaySavedWords();
+                    }
+                    
+                    // Provide immediate visual feedback
+                    saveBtn.innerHTML = '✓ Saved!';
+                    saveBtn.style.background = '#27ae60';
+                    
+                    setTimeout(() => {
+                        saveBtn.innerHTML = '💾 Save Word';
+                        saveBtn.style.background = '';
+                        saveBtn.disabled = false;
+                    }, 2000);
+                } else {
+                    // Handle save error
+                    saveBtn.innerHTML = '❌ Error';
+                    saveBtn.style.background = '#e74c3c';
+                    
+                    setTimeout(() => {
+                        saveBtn.innerHTML = '💾 Save Word';
+                        saveBtn.style.background = '';
+                        saveBtn.disabled = false;
+                    }, 2000);
+                }
             });
         }
     } catch (error) {
@@ -141,16 +155,18 @@ async function batchLookup(words) {
                 batchProgress.textContent = `Looking up word ${current}/${total}: "${currentWord}"... (${savedCount} saved)`;
             },
             // Auto-save callback - saves each word as it's looked up
-            (result) => {
+            async (result) => {
                 if (result.success) {
-                    saveWord(result.word, result.definition, result.example);
-                    savedCount++;
-                    batchProgress.textContent = `Looking up... (${savedCount} saved so far)`;
-                    
-                    // Update saved words tab if visible
-                    const savedWordsPanel = document.getElementById('saved-panel');
-                    if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
-                        displaySavedWords();
+                    const success = await saveWord(result.word, result.definition, result.example);
+                    if (success) {
+                        savedCount++;
+                        batchProgress.textContent = `Looking up... (${savedCount} saved so far)`;
+                        
+                        // Update saved words tab if visible
+                        const savedWordsPanel = document.getElementById('saved-panel');
+                        if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
+                            await displaySavedWords();
+                        }
                     }
                 }
             }

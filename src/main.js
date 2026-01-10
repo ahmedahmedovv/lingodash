@@ -21,9 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear history button
     const clearHistoryBtn = document.getElementById('clearHistory');
     if (clearHistoryBtn) {
-        clearHistoryBtn.addEventListener('click', () => {
-            if (clearAllWords()) {
-                displaySavedWords();
+        clearHistoryBtn.addEventListener('click', async () => {
+            const success = await clearAllWords();
+            if (success) {
+                await displaySavedWords();
             }
         });
     }
