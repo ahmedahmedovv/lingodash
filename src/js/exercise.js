@@ -116,45 +116,60 @@ function showQuestion() {
         showResults();
         return;
     }
-    
+
     // If we reached the end but still have unmastered words, shouldn't happen but safety check
     if (currentQuestionIndex >= exerciseWords.length) {
         showResults();
         return;
     }
-    
+
     const currentWord = exerciseWords[currentQuestionIndex];
-    
+
+    // Trigger slide-in animation
+    const questionCard = document.querySelector('.question-card-minimal');
+    questionCard.classList.remove('slide-in');
+    // Force reflow to restart animation
+    void questionCard.offsetWidth;
+    questionCard.classList.add('slide-in');
+
     // Display word due date information
     displayWordDueInfo(currentWord);
-    
+
     // Show the example sentence with blanks for the word
-    const exampleWithBlank = currentWord.example 
+    const exampleWithBlank = currentWord.example
         ? currentWord.example.replace(new RegExp(currentWord.word, 'gi'), '___________')
         : 'Example sentence not available.';
-    
+
     document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithBlank}"</em>`;
-    
+
     // Show the definition with first letter hint
     const firstLetter = currentWord.word.charAt(0).toUpperCase();
     document.getElementById('definitionDisplay').textContent = `${currentWord.definition} (${firstLetter})`;
-    
+
     // Reset input and feedback
     const answerInput = document.getElementById('answerInput');
     answerInput.value = '';
     answerInput.disabled = false;
-    answerInput.classList.remove('correct-input', 'incorrect-input');
+    answerInput.classList.remove('correct-input', 'incorrect-input', 'shake');
     answerInput.focus();
-    
+
     document.getElementById('answerFeedback').innerHTML = '';
     document.getElementById('nextQuestion').style.display = 'none';
-    
-    // Show hint text when input is enabled
+
+    // Remove any existing sparkle container
+    const existingSparkles = document.querySelector('.sparkle-container');
+    if (existingSparkles) {
+        existingSparkles.remove();
+    }
+
+    // Update hint text for input mode
     const hintText = document.querySelector('.press-enter-hint');
     if (hintText) {
         hintText.style.display = 'block';
+        hintText.textContent = 'Press Enter to submit';
+        hintText.classList.remove('continue-hint');
     }
-    
+
     // Keep word stats hidden (minimalist approach)
     // document.getElementById('wordStats').classList.remove('visible');
 }
@@ -242,11 +257,12 @@ async function checkAnswer() {
     // Increment total attempts
     totalAttempts++;
     
-    // Disable input and hide hint text
+    // Disable input and update hint text for continue
     answerInput.disabled = true;
     const hintText = document.querySelector('.press-enter-hint');
     if (hintText) {
-        hintText.style.display = 'none';
+        hintText.textContent = 'Press Enter to continue →';
+        hintText.classList.add('continue-hint');
     }
     
     // Update spaced repetition data
@@ -258,20 +274,24 @@ async function checkAnswer() {
     if (isCorrect) {
         // Mark word as mastered in this session
         masteredWords.add(correctWord);
-        
+
         // Show the word in the example sentence with highlighting
-        const exampleWithWord = currentWord.example 
+        const exampleWithWord = currentWord.example
             ? currentWord.example.replace(
-                new RegExp(currentWord.word, 'gi'), 
+                new RegExp(currentWord.word, 'gi'),
                 `<mark class="highlight-word">${currentWord.word}</mark>`
             )
             : `Example with "<mark class="highlight-word">${currentWord.word}</mark>"`;
-        
+
         document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithWord}"</em>`;
-        
+
         // No feedback message - user can see the highlighted word
         feedbackDiv.innerHTML = '';
         answerInput.classList.add('correct-input');
+
+        // Add sparkle effect
+        createSparkles();
+
         correctAnswers++;
         updateExerciseProgress();
     } else {
@@ -281,23 +301,26 @@ async function checkAnswer() {
             currentQuestionIndex + Math.floor(Math.random() * 2) + 2,
             exerciseWords.length
         );
-        
+
         // Create a copy of the word to re-add
         exerciseWords.splice(insertPosition, 0, { ...currentWord });
-        
+
         // Show the correct word in the example sentence for incorrect answers
-        const exampleWithWord = currentWord.example 
+        const exampleWithWord = currentWord.example
             ? currentWord.example.replace(
-                new RegExp(currentWord.word, 'gi'), 
+                new RegExp(currentWord.word, 'gi'),
                 `<mark class="highlight-word">${currentWord.word}</mark>`
             )
             : `Example with "<mark class="highlight-word">${currentWord.word}</mark>"`;
-        
+
         document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithWord}"</em>`;
-        
+
         // Keep UI minimal - no retry notice needed
         feedbackDiv.innerHTML = '';
         answerInput.classList.add('incorrect-input');
+
+        // Add shake animation
+        answerInput.classList.add('shake');
     }
     
     currentQuestionIndex++;
@@ -327,6 +350,35 @@ function showResults() {
             ${correctAnswers} correct out of ${totalAttempts} attempts (${accuracy}%)
         </div>
     `;
+}
+
+function createSparkles() {
+    const answerSection = document.querySelector('.answer-section');
+    if (!answerSection) return;
+
+    // Remove any existing sparkle container
+    const existingSparkles = document.querySelector('.sparkle-container');
+    if (existingSparkles) {
+        existingSparkles.remove();
+    }
+
+    // Create sparkle container
+    const sparkleContainer = document.createElement('div');
+    sparkleContainer.className = 'sparkle-container';
+
+    // Create 8 sparkles
+    for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('span');
+        sparkle.className = 'sparkle';
+        sparkleContainer.appendChild(sparkle);
+    }
+
+    answerSection.appendChild(sparkleContainer);
+
+    // Remove sparkles after animation completes
+    setTimeout(() => {
+        sparkleContainer.remove();
+    }, 1000);
 }
 
 function resetExercise() {
