@@ -397,63 +397,44 @@ input[type="text"]::placeholder {
     margin: 0 auto;
 }
 
-.word-due-info {
+.word-due-info-minimal {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem 1rem;
-    background: #f8f9fa;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    color: #666;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
 }
 
-.word-due-info.due-now {
-    background: #ffebee;
-    color: #c62828;
-    border: 1px solid #ffcdd2;
-}
-
-.word-due-info.due-soon {
-    background: #fff3e0;
-    color: #ef6c00;
-    border: 1px solid #ffe0b2;
-}
-
-.word-due-info.future {
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #c8e6c9;
-}
-
-.word-due-badge {
-    padding: 0.25rem 0.75rem;
+.word-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
     border-radius: 4px;
+    font-size: 0.7rem;
     font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    letter-spacing: 0.5px;
 }
 
-.badge-overdue {
-    background: #e74c3c;
-    color: white;
+.word-badge.overdue {
+    background: #fee;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
 }
 
-.badge-due-today {
-    background: #f39c12;
-    color: white;
+.word-badge.today {
+    background: #fff3e0;
+    color: #f39c12;
+    border: 1px solid #f39c12;
 }
 
-.badge-upcoming {
-    background: #667eea;
-    color: white;
+.word-badge.upcoming {
+    background: #f0f4ff;
+    color: #667eea;
+    border: 1px solid #667eea;
 }
 
-.badge-new {
-    background: #3498db;
-    color: white;
+.word-badge.new {
+    background: #e3f2fd;
+    color: #2196f3;
+    border: 1px solid #2196f3;
 }
 
 .word-stats {
@@ -498,6 +479,7 @@ input[type="text"]::placeholder {
     margin-bottom: 1.5rem;
     padding: 0.75rem 0;
     border-bottom: 1px solid #e0e0e0;
+    text-align: center;
 }
 
 .definition-display-minimal {
@@ -506,17 +488,20 @@ input[type="text"]::placeholder {
     line-height: 1.6;
     margin-bottom: 1.5rem;
     padding: 0.5rem 0;
-    text-align: left;
+    text-align: center;
 }
 
 .answer-section {
     display: flex;
-    gap: 0.5rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 1rem;
 }
 
 .answer-input-minimal {
-    flex: 1;
+    width: 100%;
+    max-width: 400px;
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
     border: 1px solid #ddd;
@@ -524,6 +509,7 @@ input[type="text"]::placeholder {
     outline: none;
     transition: all 0.2s ease;
     background: #fafafa;
+    text-align: center;
 }
 
 .answer-input-minimal:focus {

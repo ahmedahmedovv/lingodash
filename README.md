@@ -92,8 +92,8 @@ See [LEARNING_SYSTEM.md](./LEARNING_SYSTEM.md) for persistent learning system ov
 3. **View Saved Words**: Switch to the "📚 Saved Words" tab
 4. **Practice**: Go to "💪 Exercise" tab and test your knowledge
    - The system uses **spaced repetition** to prioritize words that need review
-   - Each word shows its **due date status** with color-coded badges (overdue, due today, upcoming)
-   - View **word statistics** after each answer (review count, accuracy, interval)
+   - Each word shows a **compact due date badge** (−3d = overdue, Today, +7d = due in 7 days)
+   - **Minimalist interface**: Clean, distraction-free learning experience
    - **Persistent learning**: Words answered incorrectly reappear in the same session until mastered
    - Session ends only when all words are answered correctly at least once
    - Successfully learned words appear at increasing intervals (1 day → 3 days → 1 week → etc.)

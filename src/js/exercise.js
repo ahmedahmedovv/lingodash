@@ -131,8 +131,8 @@ function showQuestion() {
     document.getElementById('submitAnswer').style.display = 'inline-block';
     document.getElementById('nextQuestion').style.display = 'none';
     
-    // Hide word stats initially
-    document.getElementById('wordStats').classList.remove('visible');
+    // Keep word stats hidden (minimalist approach)
+    // document.getElementById('wordStats').classList.remove('visible');
 }
 
 function displayWordDueInfo(word) {
@@ -140,8 +140,8 @@ function displayWordDueInfo(word) {
     
     if (!word.nextReview) {
         // New word without review data
-        dueInfoDiv.innerHTML = '<span class="word-due-badge badge-new">🆕 New Word</span>';
-        dueInfoDiv.className = 'word-due-info due-now';
+        dueInfoDiv.innerHTML = '<span class="word-badge new">New</span>';
+        dueInfoDiv.className = 'word-due-info-minimal';
         return;
     }
     
@@ -152,47 +152,24 @@ function displayWordDueInfo(word) {
     
     let badgeClass = '';
     let badgeText = '';
-    let infoClass = 'word-due-info';
-    let statusText = '';
     
     if (diffDays < 0) {
         // Overdue
         const overdueDays = Math.abs(diffDays);
-        badgeClass = 'badge-overdue';
-        badgeText = '🔥 Overdue';
-        infoClass += ' due-now';
-        statusText = `${overdueDays} day${overdueDays !== 1 ? 's' : ''} overdue`;
+        badgeClass = 'overdue';
+        badgeText = `−${overdueDays}d`;
     } else if (diffDays === 0) {
         // Due today
-        badgeClass = 'badge-due-today';
-        badgeText = '⏰ Due Today';
-        infoClass += ' due-now';
-        statusText = 'Review scheduled for today';
-    } else if (diffDays === 1) {
-        // Due tomorrow
-        badgeClass = 'badge-upcoming';
-        badgeText = '📅 Due Tomorrow';
-        infoClass += ' due-soon';
-        statusText = 'Review scheduled for tomorrow';
-    } else if (diffDays <= 7) {
-        // Due within a week
-        badgeClass = 'badge-upcoming';
-        badgeText = `📅 Due in ${diffDays} Days`;
-        infoClass += ' due-soon';
-        statusText = `Review scheduled for ${formatDate(dueDate)}`;
+        badgeClass = 'today';
+        badgeText = 'Today';
     } else {
         // Future review
-        badgeClass = 'badge-upcoming';
-        badgeText = `📅 Due in ${diffDays} Days`;
-        infoClass += ' future';
-        statusText = `Next review: ${formatDate(dueDate)}`;
+        badgeClass = 'upcoming';
+        badgeText = `+${diffDays}d`;
     }
     
-    dueInfoDiv.className = infoClass;
-    dueInfoDiv.innerHTML = `
-        <span class="word-due-badge ${badgeClass}">${badgeText}</span>
-        <span>${statusText}</span>
-    `;
+    dueInfoDiv.className = 'word-due-info-minimal';
+    dueInfoDiv.innerHTML = `<span class="word-badge ${badgeClass}">${badgeText}</span>`;
 }
 
 function formatDate(date) {
@@ -248,8 +225,8 @@ function checkAnswer() {
     // Update spaced repetition data
     updateWordReview(currentWord.word, isCorrect);
     
-    // Show word statistics after answering
-    displayWordStats(currentWord);
+    // Don't show word statistics - keeping UI minimal
+    // displayWordStats(currentWord);
     
     if (isCorrect) {
         // Mark word as mastered in this session
@@ -291,8 +268,8 @@ function checkAnswer() {
         
         document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithWord}"</em>`;
         
-        // Show feedback that this word will be asked again
-        feedbackDiv.innerHTML = '<div class="retry-notice">💡 You\'ll see this word again shortly</div>';
+        // Keep UI minimal - no retry notice needed
+        feedbackDiv.innerHTML = '';
         answerInput.classList.add('incorrect-input');
     }
     

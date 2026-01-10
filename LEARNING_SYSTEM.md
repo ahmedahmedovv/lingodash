@@ -34,21 +34,15 @@ LingoDash implements a **persistent learning system** that ensures you truly mas
 
 ### During Exercise
 
-**Due Date Badges** (shown before each question):
-- 🆕 **New Word** - First time reviewing
-- 🔥 **Overdue** - Past review date (X days overdue)
-- ⏰ **Due Today** - Scheduled for today
-- 📅 **Due Tomorrow** - Scheduled for tomorrow
-- 📅 **Due in X Days** - Future review
+**Due Date Badge** (compact indicator in top-right):
+- **New** - First time reviewing
+- **−3d** - Overdue by 3 days (red)
+- **Today** - Scheduled for today (orange)
+- **+7d** - Due in 7 days (purple)
 
 **After Answering**:
 - ✅ Correct: Green input, word highlighted in example
-- ❌ Incorrect: Red input, word highlighted in example, "💡 You'll see this word again shortly"
-
-**Word Statistics** (shown after each answer):
-- **Reviewed**: Total times practiced (all sessions)
-- **Accuracy**: Success rate across all sessions
-- **Interval**: Days until next scheduled review
+- ❌ Incorrect: Red input, word highlighted in example (word will reappear later)
 
 ### Results Screen
 

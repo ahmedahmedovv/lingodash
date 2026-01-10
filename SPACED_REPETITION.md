@@ -46,20 +46,14 @@ The system ensures proper learning through **persistent repetition**:
 
 ### Visual Due Date Indicators
 
-Each word during the exercise displays its review status with color-coded badges:
+Each word displays a minimal badge showing its review status:
 
-- **🆕 New Word** (Blue): First time reviewing this word
-- **🔥 Overdue** (Red): Word is past its review date - needs immediate attention
-- **⏰ Due Today** (Orange): Word is scheduled for review today
-- **📅 Due Tomorrow** (Purple): Word is scheduled for tomorrow
-- **📅 Due in X Days** (Purple/Green): Upcoming review dates
+- **New** (Blue): First time reviewing this word
+- **−Xd** (Red): Overdue by X days - needs attention
+- **Today** (Orange): Scheduled for review today
+- **+Xd** (Purple): Due in X days
 
-### Word Statistics
-
-After answering each question, you'll see:
-- **Reviewed**: How many times you've practiced this word (across all sessions)
-- **Accuracy**: Your success rate with this word
-- **Interval**: Current days until next review
+The badge uses a compact, monospace format (e.g., `−3d`, `Today`, `+7d`) for a clean, minimalist look.
 
 ### Results Summary
 
