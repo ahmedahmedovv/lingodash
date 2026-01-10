@@ -131,3 +131,55 @@ export function clearAllWords() {
     }
     return false;
 }
+
+// Export words in different formats
+export function exportWords(format = 'json') {
+    const words = getSavedWords();
+    
+    if (words.length === 0) {
+        alert('No words to export!');
+        return;
+    }
+    
+    let content, filename, mimeType;
+    
+    if (format === 'csv') {
+        // CSV format
+        const headers = ['Word', 'Definition', 'Example', 'Date Added', 'Review Count', 'Correct Count', 'Next Review', 'Interval (days)'];
+        const csvRows = [headers.join(',')];
+        
+        words.forEach(word => {
+            const row = [
+                `"${word.word}"`,
+                `"${word.definition.replace(/"/g, '""')}"`,
+                `"${(word.example || '').replace(/"/g, '""')}"`,
+                `"${new Date(word.timestamp).toLocaleDateString()}"`,
+                word.reviewCount || 0,
+                word.correctCount || 0,
+                word.nextReview ? `"${new Date(word.nextReview).toLocaleDateString()}"` : '""',
+                word.interval || 0
+            ];
+            csvRows.push(row.join(','));
+        });
+        
+        content = csvRows.join('\n');
+        filename = `lingodash-vocabulary-${new Date().toISOString().split('T')[0]}.csv`;
+        mimeType = 'text/csv';
+    } else {
+        // JSON format (default)
+        content = JSON.stringify(words, null, 2);
+        filename = `lingodash-vocabulary-${new Date().toISOString().split('T')[0]}.json`;
+        mimeType = 'application/json';
+    }
+    
+    // Create download link
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}

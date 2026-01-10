@@ -1,4 +1,4 @@
-import { getSavedWords, deleteWord } from './storage.js';
+import { getSavedWords, deleteWord, exportWords } from './storage.js';
 
 export function displaySavedWords() {
     const savedWordsList = document.getElementById('savedWordsList');
@@ -51,5 +51,50 @@ export function initTabs() {
                 displaySavedWords();
             }
         });
+    });
+}
+
+export function showExportMenu() {
+    // Create export format selection buttons
+    const exportOverlay = document.createElement('div');
+    exportOverlay.className = 'export-overlay';
+    exportOverlay.innerHTML = `
+        <div class="export-modal">
+            <h3>Choose Export Format</h3>
+            <p>Select the format you'd like to export your vocabulary:</p>
+            <div class="export-buttons">
+                <button class="export-format-btn" data-format="json">
+                    📄 JSON
+                    <span class="format-desc">Complete data with all fields</span>
+                </button>
+                <button class="export-format-btn" data-format="csv">
+                    📊 CSV
+                    <span class="format-desc">Spreadsheet format</span>
+                </button>
+            </div>
+            <button class="export-cancel-btn">Cancel</button>
+        </div>
+    `;
+    
+    document.body.appendChild(exportOverlay);
+    
+    // Add event listeners
+    exportOverlay.querySelectorAll('.export-format-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const format = btn.getAttribute('data-format');
+            exportWords(format);
+            document.body.removeChild(exportOverlay);
+        });
+    });
+    
+    exportOverlay.querySelector('.export-cancel-btn').addEventListener('click', () => {
+        document.body.removeChild(exportOverlay);
+    });
+    
+    // Close on overlay click
+    exportOverlay.addEventListener('click', (e) => {
+        if (e.target === exportOverlay) {
+            document.body.removeChild(exportOverlay);
+        }
     });
 }
