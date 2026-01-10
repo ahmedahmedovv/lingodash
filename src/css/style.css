@@ -171,8 +171,13 @@ input[type="text"]::placeholder {
     transition: background 0.3s ease;
 }
 
-.save-btn:hover {
+.save-btn:hover:not(:disabled) {
     background: #5568d3;
+}
+
+.save-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.8;
 }
 
 .saved-words-section {
@@ -348,8 +353,15 @@ input[type="text"]::placeholder {
 }
 
 .exercise-info {
+    color: #333;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.exercise-subinfo {
     color: #666;
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     margin-bottom: 2rem;
 }
 
@@ -376,75 +388,136 @@ input[type="text"]::placeholder {
     min-height: 300px;
 }
 
-.question-card {
-    background: #f8f9fa;
-    padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
+.question-card-minimal {
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.question-word {
-    color: #667eea;
-    font-size: 2rem;
+.example-sentence {
+    color: #555;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.definition-display-minimal {
+    color: #333;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    padding: 0.5rem 0;
+    text-align: left;
+}
+
+.answer-section {
+    display: flex;
+    gap: 0.5rem;
     margin-bottom: 1rem;
 }
 
-.question-prompt {
-    color: #666;
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-}
-
-.answer-options {
-    display: grid;
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
-
-.answer-option {
-    padding: 1rem;
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
+.answer-input-minimal {
+    flex: 1;
+    padding: 0.75rem 1rem;
     font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: left;
-    line-height: 1.5;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    transition: all 0.2s ease;
+    background: #fafafa;
 }
 
-.answer-option:hover:not(:disabled) {
+.answer-input-minimal:focus {
     border-color: #667eea;
-    background: rgba(102, 126, 234, 0.05);
-    transform: translateX(4px);
+    background: white;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
 }
 
-.answer-option:disabled {
+.answer-input-minimal:disabled {
+    background: #f5f5f5;
     cursor: not-allowed;
 }
 
-.answer-option.correct {
+.answer-input-minimal.correct-input {
     border-color: #27ae60;
-    background: #d4edda;
-    color: #155724;
+    background: #e8f5e9;
 }
 
-.answer-option.incorrect {
+.answer-input-minimal.incorrect-input {
     border-color: #e74c3c;
-    background: #f8d7da;
-    color: #721c24;
+    background: #ffebee;
 }
 
-.next-btn {
-    padding: 0.75rem 2rem;
+.submit-btn-minimal {
+    padding: 0.75rem 1.5rem;
     background: #667eea;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.submit-btn-minimal:hover {
+    background: #5568d3;
+}
+
+.answer-feedback {
+    min-height: 40px;
+    margin-top: 1rem;
+}
+
+.feedback-correct {
+    padding: 0.75rem 1rem;
+    background: #e8f5e9;
+    border-left: 3px solid #27ae60;
+    color: #1b5e20;
+    font-size: 0.9rem;
+    animation: slideIn 0.3s ease;
+}
+
+.feedback-incorrect {
+    padding: 0.75rem 1rem;
+    background: #ffebee;
+    border-left: 3px solid #e74c3c;
+    color: #c62828;
+    font-size: 0.9rem;
+    animation: slideIn 0.3s ease;
+}
+
+.example-text {
+    color: #666;
+    font-style: italic;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.next-btn {
+    padding: 0.75rem 1.5rem;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
     margin-top: 1rem;
 }
 

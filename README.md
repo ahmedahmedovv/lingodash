@@ -1,85 +1,100 @@
 # LingoDash
 
-A simple, elegant web application that provides instant word definitions using Mistral AI.
+An AI-powered vocabulary learning application with word lookup, saving, and exercise features.
 
-## 🚀 Features
+## Features
 
-- Clean, modern UI with gradient background
-- Centered text input with smooth animations
-- **AI-powered word definitions** using Mistral AI
-- Real-time definition lookup with debouncing
-- Responsive design
-- Pure HTML, CSS, and JavaScript (no dependencies)
+- 🔍 **Word Lookup**: Search for word definitions using AI (Mistral API)
+- 💾 **Save Words**: Manually save words with definitions and examples
+- 📚 **Saved Words**: View your vocabulary collection
+- 💪 **Exercise Mode**: Test your knowledge with interactive quizzes
+- 🎯 **Type-to-Learn**: Practice by typing the correct word
 
-## 📦 Getting Started
+## Tech Stack
 
-### Prerequisites
+- **Vite**: Fast build tool and dev server
+- **Vanilla JavaScript**: ES6 modules for clean, modular code
+- **LocalStorage**: Client-side word persistence
+- **Mistral AI**: API for word definitions and examples
 
-- Node.js (v18 or higher)
-- npm or yarn
+## Project Structure
+
+```
+lingodash/
+├── index.html          # Main HTML file
+├── src/
+│   ├── main.js         # App entry point
+│   ├── css/
+│   │   └── style.css   # Styles
+│   └── js/
+│       ├── api.js      # API calls
+│       ├── config.js   # Configuration
+│       ├── exercise.js # Exercise functionality
+│       ├── lookup.js   # Word lookup
+│       ├── storage.js  # LocalStorage operations
+│       └── ui.js       # UI components
+├── vite.config.js      # Vite configuration
+└── package.json        # Dependencies
+```
+
+## Getting Started
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/lingodash.git
-cd lingodash
-```
-
-2. Install dependencies:
 ```bash
 npm install
 ```
 
-3. Start the development server:
+### Development
+
+Start the development server:
+
 ```bash
 npm run dev
 ```
 
-4. Open your browser to the URL shown in the terminal (usually `http://localhost:5173`)
+The app will open at `http://localhost:3000`
 
-## 🛠️ Usage
+### Build for Production
 
-1. Type any word into the text input box
-2. Wait 800ms or press Enter
-3. The app will fetch and display a definition using Mistral AI
-4. The definition appears below the input box with a clean, readable format
-
-**Note:** The app uses debouncing to avoid excessive API calls while you're typing.
-
-## 📁 Project Structure
-
-```
-lingodash/
-├── index.html      # Main HTML file
-├── style.css       # Styling
-├── main.js         # JavaScript with Mistral AI integration
-├── package.json    # Dependencies and scripts
-├── LICENSE         # MIT License
-└── README.md       # Project documentation
+```bash
+npm run build
 ```
 
-## 🎨 Customization
+The built files will be in the `dist/` directory.
 
-All styles are embedded in the `<style>` tag within `index.html`. You can easily customize:
-- Colors and gradients
-- Input box size and styling
-- Fonts and typography
-- Animations and transitions
+### Preview Production Build
 
-## 🤝 Contributing
+```bash
+npm run preview
+```
 
-Contributions, issues, and feature requests are welcome!
+### Run Tests
 
-## 📝 License
+```bash
+npm test              # Run tests in watch mode
+npm run test:run      # Run tests once
+npm run test:ui       # Run tests with UI
+npm run coverage      # Generate coverage report
+```
 
-This project is open source and available under the [MIT License](LICENSE).
+See [TEST_GUIDE.md](./TEST_GUIDE.md) for detailed testing documentation.
 
-## 👤 Author
+## Usage
 
-Your Name
-- GitHub: [@yourusername](https://github.com/yourusername)
+1. **Look Up Words**: Type a word and press Enter to get its definition
+2. **Save Words**: Click the "💾 Save Word" button to add it to your vocabulary
+3. **View Saved Words**: Switch to the "📚 Saved Words" tab
+4. **Practice**: Go to "💪 Exercise" tab and test your knowledge
 
-## ⭐ Show your support
+## API Configuration
 
-Give a ⭐️ if you like this project!
+The app uses Mistral AI API. Update your API key in `src/js/config.js`:
+
+```javascript
+export const MISTRAL_API_KEY = 'your-api-key-here';
+```
+
+## License
+
+MIT License - see LICENSE file for details
