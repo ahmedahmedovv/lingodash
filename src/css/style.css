@@ -11,7 +11,7 @@ html, body {
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #9c7a5c 0%, #8b6d4f 100%);
     display: flex;
     flex-direction: column;
 }
@@ -54,8 +54,8 @@ body {
 
 .tab-header {
     display: flex;
-    background: #f8f9fa;
-    border-bottom: 2px solid #e0e0e0;
+    background: #F5F1E8;
+    border-bottom: 2px solid #D4C5B0;
     flex-shrink: 0;
 }
 
@@ -66,19 +66,19 @@ body {
     border: none;
     font-size: 1.2rem;
     font-weight: 600;
-    color: #666;
+    color: #6D5C4D;
     cursor: pointer;
     transition: all 0.3s ease;
     position: relative;
 }
 
 .tab-btn:hover {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
+    background: rgba(139, 115, 85, 0.1);
+    color: #8B7355;
 }
 
 .tab-btn.active {
-    color: #667eea;
+    color: #8B7355;
     background: white;
 }
 
@@ -89,7 +89,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: #667eea;
+    background: #8B7355;
 }
 
 .tab-content {
@@ -139,25 +139,25 @@ input[type="text"] {
     width: 500px;
     padding: 16px 20px;
     font-size: 18px;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #D4C5B0;
     border-radius: 8px;
     outline: none;
     transition: all 0.3s ease;
 }
 
 input[type="text"]:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #8B7355;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
 }
 
 input[type="text"]::placeholder {
-    color: #aaa;
+    color: #A89F8F;
 }
 
 .definition-box {
     margin-top: 2rem;
     padding: 2rem;
-    background: #f8f9fa;
+    background: #F5F1E8;
     border-radius: 8px;
     min-height: 150px;
     text-align: left;
@@ -172,30 +172,30 @@ input[type="text"]::placeholder {
 }
 
 .definition-box h3 {
-    color: #667eea;
+    color: #8B7355;
     font-size: 1.5rem;
     margin-bottom: 1rem;
 }
 
 .definition-box p {
-    color: #333;
+    color: #3E2723;
     line-height: 1.8;
     font-size: 1.1rem;
 }
 
 .loading {
-    color: #999;
+    color: #A89F8F;
     font-style: italic;
 }
 
 .error {
-    color: #e74c3c;
+    color: #A0522D;
 }
 
 .save-btn {
     margin-top: 0.75rem;
     padding: 8px 16px;
-    background: #667eea;
+    background: #8B7355;
     color: white;
     border: none;
     border-radius: 6px;
@@ -205,7 +205,7 @@ input[type="text"]::placeholder {
 }
 
 .save-btn:hover:not(:disabled) {
-    background: #5568d3;
+    background: #7a6349;
 }
 
 .save-btn:disabled {
@@ -223,11 +223,11 @@ input[type="text"]::placeholder {
     align-items: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid #D4C5B0;
 }
 
 .saved-words-header h2 {
-    color: #667eea;
+    color: #8B7355;
     font-size: 1.5rem;
     margin: 0;
     font-weight: 600;
@@ -241,7 +241,7 @@ input[type="text"]::placeholder {
 
 .export-btn {
     padding: 6px 12px;
-    background: #27ae60;
+    background: #8B7355;
     color: white;
     border: none;
     border-radius: 6px;
@@ -251,12 +251,12 @@ input[type="text"]::placeholder {
 }
 
 .export-btn:hover {
-    background: #229954;
+    background: #7a6349;
 }
 
 .clear-btn {
     padding: 6px 12px;
-    background: #e74c3c;
+    background: #A0522D;
     color: white;
     border: none;
     border-radius: 6px;
@@ -266,7 +266,7 @@ input[type="text"]::placeholder {
 }
 
 .clear-btn:hover {
-    background: #c0392b;
+    background: #8B4513;
 }
 
 .saved-words-list {
@@ -275,7 +275,7 @@ input[type="text"]::placeholder {
 }
 
 .empty-state {
-    color: #999;
+    color: #A89F8F;
     font-style: italic;
     text-align: center;
     padding: 2rem;
@@ -284,14 +284,14 @@ input[type="text"]::placeholder {
 .saved-word-item {
     padding: 1.5rem;
     margin-bottom: 1rem;
-    background: #f8f9fa;
+    background: #F5F1E8;
     border-radius: 8px;
-    border-left: 5px solid #667eea;
+    border-left: 5px solid #8B7355;
     transition: all 0.3s ease;
 }
 
 .saved-word-item:hover {
-    background: #e9ecef;
+    background: #EDE6D6;
     transform: translateX(4px);
 }
 
@@ -303,14 +303,14 @@ input[type="text"]::placeholder {
 }
 
 .saved-word-item h4 {
-    color: #667eea;
+    color: #8B7355;
     font-size: 1.3rem;
     margin: 0;
 }
 
 .delete-btn {
     background: transparent;
-    color: #e74c3c;
+    color: #A0522D;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
@@ -324,19 +324,19 @@ input[type="text"]::placeholder {
 }
 
 .delete-btn:hover {
-    background: #e74c3c;
+    background: #A0522D;
     color: white;
 }
 
 .saved-definition {
-    color: #333;
+    color: #3E2723;
     font-size: 1.05rem;
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
 
 .saved-timestamp {
-    color: #999;
+    color: #A89F8F;
     font-size: 0.75rem;
     font-style: italic;
 }
@@ -347,17 +347,17 @@ input[type="text"]::placeholder {
 }
 
 .saved-words-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #EDE6D6;
     border-radius: 4px;
 }
 
 .saved-words-list::-webkit-scrollbar-thumb {
-    background: #667eea;
+    background: #A0826D;
     border-radius: 4px;
 }
 
 .saved-words-list::-webkit-scrollbar-thumb:hover {
-    background: #5568d3;
+    background: #8B7355;
 }
 
 /* Exercise Tab Styles */
@@ -371,11 +371,11 @@ input[type="text"]::placeholder {
     align-items: center;
     margin-bottom: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid #D4C5B0;
 }
 
 .exercise-header h2 {
-    color: #667eea;
+    color: #8B7355;
     font-size: 1.5rem;
     margin: 0;
     font-weight: 600;
@@ -385,11 +385,11 @@ input[type="text"]::placeholder {
     display: flex;
     gap: 1rem;
     font-weight: 600;
-    color: #667eea;
+    color: #8B7355;
 }
 
 .exercise-stats span {
-    background: #f8f9fa;
+    background: #F5F1E8;
     padding: 0.5rem 1rem;
     border-radius: 6px;
 }
@@ -407,21 +407,21 @@ input[type="text"]::placeholder {
 }
 
 .exercise-info {
-    color: #333;
+    color: #3E2723;
     font-size: 1.6rem;
     margin-bottom: 0.75rem;
     font-weight: 600;
 }
 
 .exercise-subinfo {
-    color: #666;
+    color: #6D5C4D;
     font-size: 1.15rem;
     margin-bottom: 2.5rem;
 }
 
 .start-btn {
     padding: 1.25rem 2.5rem;
-    background: #667eea;
+    background: #8B7355;
     color: white;
     border: none;
     border-radius: 8px;
@@ -429,13 +429,13 @@ input[type="text"]::placeholder {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
 }
 
 .start-btn:hover {
-    background: #5568d3;
+    background: #7a6349;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 16px rgba(139, 115, 85, 0.4);
 }
 
 .exercise-quiz {
@@ -467,36 +467,36 @@ input[type="text"]::placeholder {
 }
 
 .word-badge.overdue {
-    background: #fee;
-    color: #e74c3c;
-    border: 1px solid #e74c3c;
+    background: #F8E4D8;
+    color: #A0522D;
+    border: 1px solid #A0522D;
 }
 
 .word-badge.today {
-    background: #fff3e0;
-    color: #f39c12;
-    border: 1px solid #f39c12;
+    background: #F5EDD8;
+    color: #B8860B;
+    border: 1px solid #B8860B;
 }
 
 .word-badge.upcoming {
-    background: #f0f4ff;
-    color: #667eea;
-    border: 1px solid #667eea;
+    background: #F5F1E8;
+    color: #8B7355;
+    border: 1px solid #8B7355;
 }
 
 .word-badge.new {
-    background: #e3f2fd;
-    color: #2196f3;
-    border: 1px solid #2196f3;
+    background: #EDE6D6;
+    color: #A0826D;
+    border: 1px solid #A0826D;
 }
 
 .word-stats {
     margin-top: 1rem;
     padding: 0.75rem;
-    background: #f8f9fa;
+    background: #F5F1E8;
     border-radius: 6px;
     font-size: 0.8rem;
-    color: #666;
+    color: #6D5C4D;
     display: none;
 }
 
@@ -522,21 +522,21 @@ input[type="text"]::placeholder {
 .stat-value {
     font-weight: 700;
     font-size: 1rem;
-    color: #667eea;
+    color: #8B7355;
 }
 
 .example-sentence {
-    color: #555;
+    color: #6D5C4D;
     font-size: 1.4rem;
     line-height: 1.9;
     margin-bottom: 2rem;
     padding: 1rem 0;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #D4C5B0;
     text-align: center;
 }
 
 .definition-display-minimal {
-    color: #333;
+    color: #3E2723;
     font-size: 1.15rem;
     line-height: 1.7;
     margin-bottom: 2rem;
@@ -557,38 +557,38 @@ input[type="text"]::placeholder {
     max-width: 600px;
     padding: 1rem 1.5rem;
     font-size: 1.2rem;
-    border: 2px solid #ddd;
+    border: 2px solid #D4C5B0;
     border-radius: 8px;
     outline: none;
     transition: all 0.2s ease;
-    background: #fafafa;
+    background: #FAF7F0;
     text-align: center;
 }
 
 .answer-input-minimal:focus {
-    border-color: #667eea;
+    border-color: #8B7355;
     background: white;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.1);
 }
 
 .answer-input-minimal:disabled {
-    background: #f5f5f5;
+    background: #EDE6D6;
     cursor: not-allowed;
 }
 
 .answer-input-minimal.correct-input {
-    border-color: #27ae60;
-    background: #e8f5e9;
+    border-color: #8B7D3A;
+    background: #F0EDD8;
 }
 
 .answer-input-minimal.incorrect-input {
-    border-color: #e74c3c;
-    background: #ffebee;
+    border-color: #A0522D;
+    background: #F8E4D8;
 }
 
 .submit-btn-minimal {
     padding: 1rem 2rem;
-    background: #667eea;
+    background: #8B7355;
     color: white;
     border: none;
     border-radius: 8px;
@@ -600,7 +600,7 @@ input[type="text"]::placeholder {
 }
 
 .submit-btn-minimal:hover {
-    background: #5568d3;
+    background: #7a6349;
 }
 
 .answer-feedback {
@@ -610,9 +610,9 @@ input[type="text"]::placeholder {
 
 .retry-notice {
     padding: 0.75rem 1rem;
-    background: #fff3e0;
-    border-left: 3px solid #f39c12;
-    color: #e67e22;
+    background: #F5EDD8;
+    border-left: 3px solid #B8860B;
+    color: #997404;
     font-size: 0.9rem;
     border-radius: 4px;
     animation: slideIn 0.3s ease;
@@ -621,28 +621,28 @@ input[type="text"]::placeholder {
 
 .feedback-correct {
     padding: 0.75rem 1rem;
-    background: #e8f5e9;
-    border-left: 3px solid #27ae60;
-    color: #1b5e20;
+    background: #F0EDD8;
+    border-left: 3px solid #8B7D3A;
+    color: #5A5226;
     font-size: 0.9rem;
     animation: slideIn 0.3s ease;
 }
 
 .feedback-incorrect {
     padding: 0.75rem 1rem;
-    background: #ffebee;
-    border-left: 3px solid #e74c3c;
-    color: #c62828;
+    background: #F8E4D8;
+    border-left: 3px solid #A0522D;
+    color: #7A3E1F;
     font-size: 0.9rem;
     animation: slideIn 0.3s ease;
 }
 
 .example-text {
-    color: #666;
+    color: #6D5C4D;
     font-style: italic;
     margin-top: 0.75rem;
     padding-top: 0.75rem;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #D4C5B0;
 }
 
 @keyframes slideIn {
@@ -664,7 +664,7 @@ input[type="text"]::placeholder {
 }
 
 .highlight-word {
-    color: #22c55e;
+    color: #8B7D3A;
     font-weight: bold;
     background: none;
 }
@@ -672,7 +672,7 @@ input[type="text"]::placeholder {
 
 .next-btn {
     padding: 0.75rem 1.5rem;
-    background: #667eea;
+    background: #8B7355;
     color: white;
     border: none;
     border-radius: 6px;
@@ -684,7 +684,7 @@ input[type="text"]::placeholder {
 }
 
 .next-btn:hover {
-    background: #5568d3;
+    background: #7a6349;
 }
 
 .exercise-results {
@@ -693,19 +693,19 @@ input[type="text"]::placeholder {
 }
 
 .exercise-results h3 {
-    color: #667eea;
+    color: #8B7355;
     font-size: 2rem;
     margin-bottom: 1.5rem;
 }
 
 .final-score {
     font-size: 1.5rem;
-    color: #333;
+    color: #3E2723;
     margin-bottom: 2rem;
 }
 
 .final-score span {
-    color: #667eea;
+    color: #8B7355;
     font-weight: 700;
     font-size: 1.8rem;
 }
@@ -720,9 +720,9 @@ input[type="text"]::placeholder {
 
 .mode-btn {
     padding: 0.5rem 1.5rem;
-    background: #f8f9fa;
-    color: #666;
-    border: 2px solid #e0e0e0;
+    background: #F5F1E8;
+    color: #6D5C4D;
+    border: 2px solid #D4C5B0;
     border-radius: 6px;
     cursor: pointer;
     font-size: 0.9rem;
@@ -731,14 +731,14 @@ input[type="text"]::placeholder {
 }
 
 .mode-btn:hover {
-    background: #e9ecef;
-    border-color: #667eea;
+    background: #EDE6D6;
+    border-color: #8B7355;
 }
 
 .mode-btn.active {
-    background: #667eea;
+    background: #8B7355;
     color: white;
-    border-color: #667eea;
+    border-color: #8B7355;
 }
 
 .batch-wrapper {
@@ -752,7 +752,7 @@ input[type="text"]::placeholder {
     padding: 16px 20px;
     font-size: 18px;
     font-family: inherit;
-    border: 2px solid #e0e0e0;
+    border: 2px solid #D4C5B0;
     border-radius: 8px;
     outline: none;
     transition: all 0.3s ease;
@@ -760,14 +760,14 @@ input[type="text"]::placeholder {
 }
 
 #batchInput:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #8B7355;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
 }
 
 .batch-lookup-btn {
     margin-top: 1rem;
     padding: 12px 24px;
-    background: #667eea;
+    background: #8B7355;
     color: white;
     border: none;
     border-radius: 8px;
@@ -775,17 +775,17 @@ input[type="text"]::placeholder {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
 }
 
 .batch-lookup-btn:hover:not(:disabled) {
-    background: #5568d3;
+    background: #7a6349;
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 16px rgba(139, 115, 85, 0.4);
 }
 
 .batch-lookup-btn:disabled {
-    background: #ccc;
+    background: #C9BFB0;
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -794,9 +794,9 @@ input[type="text"]::placeholder {
 .batch-progress {
     margin-top: 1rem;
     padding: 0.75rem;
-    background: #f8f9fa;
+    background: #F5F1E8;
     border-radius: 6px;
-    color: #667eea;
+    color: #8B7355;
     font-weight: 600;
 }
 
@@ -809,9 +809,9 @@ input[type="text"]::placeholder {
 
 .batch-result-card {
     padding: 1.25rem;
-    background: #f8f9fa;
+    background: #F5F1E8;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
+    border-left: 4px solid #8B7355;
     transition: all 0.3s ease;
     animation: slideInUp 0.4s ease;
 }
@@ -828,12 +828,12 @@ input[type="text"]::placeholder {
 }
 
 .batch-result-card:hover {
-    background: #e9ecef;
+    background: #EDE6D6;
     transform: translateX(4px);
 }
 
 .batch-result-card.error {
-    border-left-color: #e74c3c;
+    border-left-color: #A0522D;
 }
 
 .batch-result-header {
@@ -844,32 +844,32 @@ input[type="text"]::placeholder {
 }
 
 .batch-result-card h4 {
-    color: #667eea;
+    color: #8B7355;
     font-size: 1.2rem;
     margin: 0;
 }
 
 .batch-result-card.error h4 {
-    color: #e74c3c;
+    color: #A0522D;
 }
 
 .batch-result-card p {
-    color: #333;
+    color: #3E2723;
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
 
 .batch-result-card .example-text {
-    color: #666;
+    color: #6D5C4D;
     font-style: italic;
     font-size: 0.9rem;
     margin-top: 0.5rem;
     padding-top: 0.5rem;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #D4C5B0;
 }
 
 .batch-result-card .error {
-    color: #e74c3c;
+    color: #A0522D;
 }
 
 .batch-actions {
@@ -881,7 +881,7 @@ input[type="text"]::placeholder {
 
 .batch-save-all-btn {
     padding: 12px 24px;
-    background: #27ae60;
+    background: #8B7355;
     color: white;
     border: none;
     border-radius: 8px;
@@ -892,18 +892,18 @@ input[type="text"]::placeholder {
 }
 
 .batch-save-all-btn:hover:not(:disabled) {
-    background: #229954;
+    background: #7a6349;
 }
 
 .batch-save-all-btn:disabled {
-    background: #ccc;
+    background: #C9BFB0;
     cursor: not-allowed;
 }
 
 .batch-clear-btn {
     padding: 12px 24px;
-    background: #e0e0e0;
-    color: #666;
+    background: #D4C5B0;
+    color: #6D5C4D;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
@@ -913,7 +913,7 @@ input[type="text"]::placeholder {
 }
 
 .batch-clear-btn:hover {
-    background: #d0d0d0;
+    background: #C4B49F;
 }
 
 /* Export Modal Styles */
@@ -942,14 +942,14 @@ input[type="text"]::placeholder {
 }
 
 .export-modal h3 {
-    color: #667eea;
+    color: #8B7355;
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
     text-align: center;
 }
 
 .export-modal p {
-    color: #666;
+    color: #6D5C4D;
     text-align: center;
     margin-bottom: 1.5rem;
 }
@@ -966,22 +966,22 @@ input[type="text"]::placeholder {
     flex-direction: column;
     align-items: center;
     padding: 1.25rem;
-    background: #f8f9fa;
-    border: 2px solid #e0e0e0;
+    background: #F5F1E8;
+    border: 2px solid #D4C5B0;
     border-radius: 8px;
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #333;
+    color: #3E2723;
 }
 
 .export-format-btn:hover {
-    background: #667eea;
+    background: #8B7355;
     color: white;
-    border-color: #667eea;
+    border-color: #8B7355;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
 }
 
 .format-desc {
@@ -994,8 +994,8 @@ input[type="text"]::placeholder {
 .export-cancel-btn {
     width: 100%;
     padding: 0.75rem;
-    background: #e0e0e0;
-    color: #666;
+    background: #D4C5B0;
+    color: #6D5C4D;
     border: none;
     border-radius: 6px;
     font-size: 0.9rem;
@@ -1005,5 +1005,5 @@ input[type="text"]::placeholder {
 }
 
 .export-cancel-btn:hover {
-    background: #d0d0d0;
+    background: #C4B49F;
 }
