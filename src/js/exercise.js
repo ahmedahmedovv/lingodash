@@ -3,6 +3,8 @@ import { getSavedWords, getWordsDueForReview, updateWordReview } from './storage
 let exerciseWords = [];
 let currentQuestionIndex = 0;
 let correctAnswers = 0;
+let masteredWords = new Set(); // Track words answered correctly in this session
+let totalAttempts = 0; // Track total questions answered
 
 export function initExercise() {
     document.getElementById('startExercise').addEventListener('click', startExercise);
@@ -78,6 +80,8 @@ function startExercise() {
     
     currentQuestionIndex = 0;
     correctAnswers = 0;
+    masteredWords.clear(); // Reset mastered words
+    totalAttempts = 0; // Reset attempts counter
     
     document.getElementById('exerciseContent').style.display = 'none';
     document.getElementById('exerciseQuiz').style.display = 'block';
@@ -88,6 +92,14 @@ function startExercise() {
 }
 
 function showQuestion() {
+    // Check if all words have been mastered
+    const initialWordCount = [...new Set(exerciseWords.map(w => w.word.toLowerCase()))].length;
+    if (masteredWords.size === initialWordCount && currentQuestionIndex >= exerciseWords.length) {
+        showResults();
+        return;
+    }
+    
+    // If we reached the end but still have unmastered words, shouldn't happen but safety check
     if (currentQuestionIndex >= exerciseWords.length) {
         showResults();
         return;
@@ -226,6 +238,9 @@ function checkAnswer() {
     const isCorrect = userAnswer === correctWord;
     const feedbackDiv = document.getElementById('answerFeedback');
     
+    // Increment total attempts
+    totalAttempts++;
+    
     // Disable input and submit button
     answerInput.disabled = true;
     document.getElementById('submitAnswer').style.display = 'none';
@@ -237,6 +252,9 @@ function checkAnswer() {
     displayWordStats(currentWord);
     
     if (isCorrect) {
+        // Mark word as mastered in this session
+        masteredWords.add(correctWord);
+        
         // Show the word in the example sentence with highlighting
         const exampleWithWord = currentWord.example 
             ? currentWord.example.replace(
@@ -253,6 +271,16 @@ function checkAnswer() {
         correctAnswers++;
         updateExerciseProgress();
     } else {
+        // Word answered incorrectly - add it back to the queue
+        // Insert it 2-3 positions ahead (or at the end if near the end)
+        const insertPosition = Math.min(
+            currentQuestionIndex + Math.floor(Math.random() * 2) + 2,
+            exerciseWords.length
+        );
+        
+        // Create a copy of the word to re-add
+        exerciseWords.splice(insertPosition, 0, { ...currentWord });
+        
         // Show the correct word in the example sentence for incorrect answers
         const exampleWithWord = currentWord.example 
             ? currentWord.example.replace(
@@ -263,8 +291,8 @@ function checkAnswer() {
         
         document.getElementById('exampleSentence').innerHTML = `<em>"${exampleWithWord}"</em>`;
         
-        // No feedback message - user can see the highlighted word
-        feedbackDiv.innerHTML = '';
+        // Show feedback that this word will be asked again
+        feedbackDiv.innerHTML = '<div class="retry-notice">💡 You\'ll see this word again shortly</div>';
         answerInput.classList.add('incorrect-input');
     }
     
@@ -284,8 +312,17 @@ function showResults() {
     document.getElementById('exerciseQuiz').style.display = 'none';
     document.getElementById('exerciseResults').style.display = 'block';
     
-    const percentage = Math.round((correctAnswers / exerciseWords.length) * 100);
-    document.getElementById('finalScore').textContent = `${correctAnswers}/${exerciseWords.length} (${percentage}%)`;
+    const uniqueWords = masteredWords.size;
+    const accuracy = totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0;
+    
+    document.getElementById('finalScore').innerHTML = `
+        <div style="margin-bottom: 1rem;">
+            <strong>${uniqueWords}</strong> word${uniqueWords !== 1 ? 's' : ''} mastered
+        </div>
+        <div style="font-size: 1rem; color: #666;">
+            ${correctAnswers} correct out of ${totalAttempts} attempts (${accuracy}%)
+        </div>
+    `;
 }
 
 function resetExercise() {
@@ -294,5 +331,7 @@ function resetExercise() {
     document.getElementById('exerciseResults').style.display = 'none';
     correctAnswers = 0;
     currentQuestionIndex = 0;
+    masteredWords.clear();
+    totalAttempts = 0;
     updateExerciseProgress();
 }

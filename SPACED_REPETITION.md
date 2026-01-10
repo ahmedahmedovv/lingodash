@@ -33,6 +33,16 @@ When you start an exercise:
 1. **Priority to due words**: Words that are due for review appear first
 2. **Smart mixing**: If fewer than 5 words are due, additional words are added for variety
 3. **Automatic tracking**: Your answers automatically update each word's review schedule
+4. **Persistent practice**: Words answered incorrectly will reappear later in the same session until you get them right
+
+### Learning Until Mastery
+
+The system ensures proper learning through **persistent repetition**:
+
+- ✅ **Correct answer**: Word is marked as mastered and won't appear again in this session
+- ❌ **Incorrect answer**: Word is automatically re-added to the queue (2-3 questions ahead)
+- 🔄 **Keep trying**: Each word must be answered correctly at least once before the session ends
+- 📊 **Session complete**: Exercise ends only when all words have been mastered
 
 ### Visual Due Date Indicators
 
@@ -47,9 +57,16 @@ Each word during the exercise displays its review status with color-coded badges
 ### Word Statistics
 
 After answering each question, you'll see:
-- **Reviewed**: How many times you've practiced this word
+- **Reviewed**: How many times you've practiced this word (across all sessions)
 - **Accuracy**: Your success rate with this word
 - **Interval**: Current days until next review
+
+### Results Summary
+
+At the end of each exercise session, you'll see:
+- **Words Mastered**: Number of unique words you got correct
+- **Total Attempts**: How many questions you answered
+- **Accuracy**: Your success rate for the session
 
 ### What Gets Tracked
 
@@ -141,6 +158,36 @@ Day 1: Answer incorrectly - interval: 0 (reset, ease factor decreased)
 Day 1: Answer correctly - interval: 1
 Day 2: Answer correctly - interval: 3
 Day 5: Answer correctly - interval: 7 (shorter growth due to lower ease factor)
+```
+
+### Scenario 3: Persistent Learning in a Session
+
+```
+Session starts with 5 words: [A, B, C, D, E]
+
+Question 1: Word A → ❌ Incorrect → Re-added to queue
+Queue: [B, C, D, E, A]
+
+Question 2: Word B → ✅ Correct → Mastered (1/5)
+Queue: [C, D, E, A]
+
+Question 3: Word C → ❌ Incorrect → Re-added to queue
+Queue: [D, E, A, C]
+
+Question 4: Word D → ✅ Correct → Mastered (2/5)
+Queue: [E, A, C]
+
+Question 5: Word E → ✅ Correct → Mastered (3/5)
+Queue: [A, C]
+
+Question 6: Word A → ✅ Correct → Mastered (4/5)
+Queue: [C]
+
+Question 7: Word C → ✅ Correct → Mastered (5/5)
+Queue: []
+
+Session Complete! 🎉
+Result: 5 words mastered, 7 total attempts, 71% accuracy
 ```
 
 ## Future Enhancements

@@ -83,6 +83,7 @@ npm run coverage      # Generate coverage report
 See [TEST_GUIDE.md](./TEST_GUIDE.md) for detailed testing documentation.
 See [PERFORMANCE.md](./PERFORMANCE.md) for performance testing guide.
 See [SPACED_REPETITION.md](./SPACED_REPETITION.md) for spaced repetition system details.
+See [LEARNING_SYSTEM.md](./LEARNING_SYSTEM.md) for persistent learning system overview.
 
 ## Usage
 
@@ -93,7 +94,8 @@ See [SPACED_REPETITION.md](./SPACED_REPETITION.md) for spaced repetition system 
    - The system uses **spaced repetition** to prioritize words that need review
    - Each word shows its **due date status** with color-coded badges (overdue, due today, upcoming)
    - View **word statistics** after each answer (review count, accuracy, interval)
-   - Words you struggle with appear more frequently
+   - **Persistent learning**: Words answered incorrectly reappear in the same session until mastered
+   - Session ends only when all words are answered correctly at least once
    - Successfully learned words appear at increasing intervals (1 day → 3 days → 1 week → etc.)
 
 ## API Configuration
