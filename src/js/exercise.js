@@ -10,17 +10,33 @@ export function initExercise() {
     document.getElementById('nextQuestion').addEventListener('click', nextQuestion);
     document.getElementById('restartExercise').addEventListener('click', resetExercise);
 
-    // Allow Enter key to submit answer
+    // Allow Enter key to submit answer or go to next question
     document.getElementById('answerInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.target.disabled) {
-            checkAnswer();
+        if (e.key === 'Enter') {
+            if (!e.target.disabled) {
+                // Input is enabled - submit answer
+                checkAnswer();
+            }
+        }
+    });
+    
+    // Global Enter key listener for next question
+    document.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const nextBtn = document.getElementById('nextQuestion');
+            const answerInput = document.getElementById('answerInput');
+            
+            // If next button is visible and input is disabled (answer was submitted)
+            if (nextBtn.style.display === 'block' && answerInput.disabled) {
+                nextQuestion();
+            }
         }
     });
 }
 
 function updateExerciseProgress() {
-    document.getElementById('exerciseScore').textContent = `Score: ${correctAnswers}`;
-    document.getElementById('exerciseProgress').textContent = `${currentQuestionIndex}/${exerciseWords.length}`;
+    // Score and progress removed from UI
+    // Kept for internal tracking
 }
 
 function startExercise() {
@@ -94,6 +110,7 @@ function checkAnswer() {
         feedbackDiv.innerHTML = `
             <div class="feedback-correct">
                 ✅ Correct! The answer is "<strong>${currentWord.word}</strong>"
+                <div class="press-enter-hint">Press Enter or click Next Question to continue</div>
             </div>
         `;
         answerInput.classList.add('correct-input');
@@ -103,6 +120,7 @@ function checkAnswer() {
         feedbackDiv.innerHTML = `
             <div class="feedback-incorrect">
                 ❌ Incorrect. The correct answer is "<strong>${currentWord.word}</strong>"
+                <div class="press-enter-hint">Press Enter or click Next Question to continue</div>
             </div>
         `;
         answerInput.classList.add('incorrect-input');
