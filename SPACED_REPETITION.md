@@ -34,6 +34,23 @@ When you start an exercise:
 2. **Smart mixing**: If fewer than 5 words are due, additional words are added for variety
 3. **Automatic tracking**: Your answers automatically update each word's review schedule
 
+### Visual Due Date Indicators
+
+Each word during the exercise displays its review status with color-coded badges:
+
+- **🆕 New Word** (Blue): First time reviewing this word
+- **🔥 Overdue** (Red): Word is past its review date - needs immediate attention
+- **⏰ Due Today** (Orange): Word is scheduled for review today
+- **📅 Due Tomorrow** (Purple): Word is scheduled for tomorrow
+- **📅 Due in X Days** (Purple/Green): Upcoming review dates
+
+### Word Statistics
+
+After answering each question, you'll see:
+- **Reviewed**: How many times you've practiced this word
+- **Accuracy**: Your success rate with this word
+- **Interval**: Current days until next review
+
 ### What Gets Tracked
 
 For each word, the system tracks:

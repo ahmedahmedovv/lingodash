@@ -397,6 +397,100 @@ input[type="text"]::placeholder {
     margin: 0 auto;
 }
 
+.word-due-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.word-due-info.due-now {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.word-due-info.due-soon {
+    background: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+}
+
+.word-due-info.future {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.word-due-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.badge-overdue {
+    background: #e74c3c;
+    color: white;
+}
+
+.badge-due-today {
+    background: #f39c12;
+    color: white;
+}
+
+.badge-upcoming {
+    background: #667eea;
+    color: white;
+}
+
+.badge-new {
+    background: #3498db;
+    color: white;
+}
+
+.word-stats {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #666;
+    display: none;
+}
+
+.word-stats.visible {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.stat-value {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #667eea;
+}
+
 .example-sentence {
     color: #555;
     font-size: 1.1rem;

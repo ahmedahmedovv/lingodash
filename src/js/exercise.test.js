@@ -13,6 +13,8 @@ describe('Exercise Functions', () => {
       <div id="exampleSentence"></div>
       <div id="definitionDisplay"></div>
       <div id="answerFeedback"></div>
+      <div id="wordDueInfo"></div>
+      <div id="wordStats"></div>
       <div id="exerciseScore">Score: 0</div>
       <div id="exerciseProgress">0/0</div>
       <div id="exerciseContent" style="display: block;"></div>
@@ -33,6 +35,8 @@ describe('Exercise Functions', () => {
       expect(document.getElementById('answerInput')).toBeTruthy();
       expect(document.getElementById('exampleSentence')).toBeTruthy();
       expect(document.getElementById('definitionDisplay')).toBeTruthy();
+      expect(document.getElementById('wordDueInfo')).toBeTruthy();
+      expect(document.getElementById('wordStats')).toBeTruthy();
     });
 
     it('should require at least 3 words to start exercise', () => {

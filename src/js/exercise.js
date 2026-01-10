@@ -95,6 +95,9 @@ function showQuestion() {
     
     const currentWord = exerciseWords[currentQuestionIndex];
     
+    // Display word due date information
+    displayWordDueInfo(currentWord);
+    
     // Show the example sentence with blanks for the word
     const exampleWithBlank = currentWord.example 
         ? currentWord.example.replace(new RegExp(currentWord.word, 'gi'), '___________')
@@ -115,6 +118,99 @@ function showQuestion() {
     document.getElementById('answerFeedback').innerHTML = '';
     document.getElementById('submitAnswer').style.display = 'inline-block';
     document.getElementById('nextQuestion').style.display = 'none';
+    
+    // Hide word stats initially
+    document.getElementById('wordStats').classList.remove('visible');
+}
+
+function displayWordDueInfo(word) {
+    const dueInfoDiv = document.getElementById('wordDueInfo');
+    
+    if (!word.nextReview) {
+        // New word without review data
+        dueInfoDiv.innerHTML = '<span class="word-due-badge badge-new">🆕 New Word</span>';
+        dueInfoDiv.className = 'word-due-info due-now';
+        return;
+    }
+    
+    const now = new Date();
+    const dueDate = new Date(word.nextReview);
+    const diffMs = dueDate - now;
+    const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    
+    let badgeClass = '';
+    let badgeText = '';
+    let infoClass = 'word-due-info';
+    let statusText = '';
+    
+    if (diffDays < 0) {
+        // Overdue
+        const overdueDays = Math.abs(diffDays);
+        badgeClass = 'badge-overdue';
+        badgeText = '🔥 Overdue';
+        infoClass += ' due-now';
+        statusText = `${overdueDays} day${overdueDays !== 1 ? 's' : ''} overdue`;
+    } else if (diffDays === 0) {
+        // Due today
+        badgeClass = 'badge-due-today';
+        badgeText = '⏰ Due Today';
+        infoClass += ' due-now';
+        statusText = 'Review scheduled for today';
+    } else if (diffDays === 1) {
+        // Due tomorrow
+        badgeClass = 'badge-upcoming';
+        badgeText = '📅 Due Tomorrow';
+        infoClass += ' due-soon';
+        statusText = 'Review scheduled for tomorrow';
+    } else if (diffDays <= 7) {
+        // Due within a week
+        badgeClass = 'badge-upcoming';
+        badgeText = `📅 Due in ${diffDays} Days`;
+        infoClass += ' due-soon';
+        statusText = `Review scheduled for ${formatDate(dueDate)}`;
+    } else {
+        // Future review
+        badgeClass = 'badge-upcoming';
+        badgeText = `📅 Due in ${diffDays} Days`;
+        infoClass += ' future';
+        statusText = `Next review: ${formatDate(dueDate)}`;
+    }
+    
+    dueInfoDiv.className = infoClass;
+    dueInfoDiv.innerHTML = `
+        <span class="word-due-badge ${badgeClass}">${badgeText}</span>
+        <span>${statusText}</span>
+    `;
+}
+
+function formatDate(date) {
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+}
+
+function displayWordStats(word) {
+    const statsDiv = document.getElementById('wordStats');
+    
+    const reviewCount = word.reviewCount || 0;
+    const correctCount = word.correctCount || 0;
+    const accuracy = reviewCount > 0 ? Math.round((correctCount / reviewCount) * 100) : 0;
+    const interval = word.interval || 0;
+    
+    statsDiv.innerHTML = `
+        <div class="stat-item">
+            <span class="stat-label">Reviewed</span>
+            <span class="stat-value">${reviewCount}×</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Accuracy</span>
+            <span class="stat-value">${accuracy}%</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Interval</span>
+            <span class="stat-value">${interval}d</span>
+        </div>
+    `;
+    statsDiv.classList.add('visible');
 }
 
 function checkAnswer() {
@@ -136,6 +232,9 @@ function checkAnswer() {
     
     // Update spaced repetition data
     updateWordReview(currentWord.word, isCorrect);
+    
+    // Show word statistics after answering
+    displayWordStats(currentWord);
     
     if (isCorrect) {
         // Show the word in the example sentence with highlighting

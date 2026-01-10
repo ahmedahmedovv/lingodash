@@ -91,6 +91,8 @@ See [SPACED_REPETITION.md](./SPACED_REPETITION.md) for spaced repetition system 
 3. **View Saved Words**: Switch to the "📚 Saved Words" tab
 4. **Practice**: Go to "💪 Exercise" tab and test your knowledge
    - The system uses **spaced repetition** to prioritize words that need review
+   - Each word shows its **due date status** with color-coded badges (overdue, due today, upcoming)
+   - View **word statistics** after each answer (review count, accuracy, interval)
    - Words you struggle with appear more frequently
    - Successfully learned words appear at increasing intervals (1 day → 3 days → 1 week → etc.)
 
