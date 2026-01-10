@@ -252,6 +252,72 @@ export async function getWordsDueForReview() {
     }
 }
 
+export async function updateWord(originalWord, newWord, newDefinition, newExample) {
+    try {
+        const userId = getUserId();
+
+        // Find the existing word
+        const { data: existingWords, error: fetchError } = await supabase
+            .from('words')
+            .select('*')
+            .eq('user_id', userId)
+            .ilike('word', originalWord)
+            .limit(1);
+
+        if (fetchError) {
+            console.error('Error finding word to update:', fetchError);
+            return false;
+        }
+
+        if (!existingWords || existingWords.length === 0) {
+            console.error('Word not found:', originalWord);
+            return false;
+        }
+
+        const existingWord = existingWords[0];
+
+        // If word name changed, check for duplicates
+        if (newWord.toLowerCase() !== originalWord.toLowerCase()) {
+            const { data: duplicates, error: dupError } = await supabase
+                .from('words')
+                .select('id')
+                .eq('user_id', userId)
+                .ilike('word', newWord)
+                .limit(1);
+
+            if (dupError) {
+                console.error('Error checking for duplicates:', dupError);
+                return false;
+            }
+
+            if (duplicates && duplicates.length > 0) {
+                return { error: 'duplicate', message: 'A word with this name already exists.' };
+            }
+        }
+
+        // Update the word
+        const { error: updateError } = await supabase
+            .from('words')
+            .update({
+                word: newWord,
+                definition: newDefinition,
+                example: newExample,
+                timestamp: new Date().toISOString()
+            })
+            .eq('id', existingWord.id);
+
+        if (updateError) {
+            console.error('Error updating word:', updateError);
+            return false;
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error in updateWord:', error);
+        return false;
+    }
+}
+
 export async function deleteWord(word) {
     try {
         const userId = getUserId();

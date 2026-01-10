@@ -1,4 +1,8 @@
-import { getSavedWords, deleteWord, exportWords } from './storage.js';
+import { getSavedWords, deleteWord, updateWord, exportWords } from './storage.js';
+
+function escapeAttr(str) {
+    return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 
 export async function displaySavedWords() {
     const savedWordsList = document.getElementById('savedWordsList');
@@ -17,9 +21,13 @@ export async function displaySavedWords() {
         <div class="saved-word-item">
             <div class="saved-word-header">
                 <h4>${item.word}</h4>
-                <button class="delete-btn" data-word="${item.word}" data-index="${index}" title="Delete">×</button>
+                <div class="saved-word-actions">
+                    <button class="edit-btn" data-word="${item.word}" data-definition="${escapeAttr(item.definition)}" data-example="${escapeAttr(item.example || '')}" data-index="${index}" title="Edit">&#9998;</button>
+                    <button class="delete-btn" data-word="${item.word}" data-index="${index}" title="Delete">&times;</button>
+                </div>
             </div>
             <p class="saved-definition">${item.definition}</p>
+            ${item.example ? `<p class="saved-example">${item.example}</p>` : ''}
             <span class="saved-timestamp">${new Date(item.timestamp).toLocaleDateString()}</span>
         </div>
     `).join('');
@@ -34,6 +42,16 @@ export async function displaySavedWords() {
             } else {
                 alert('Failed to delete word. Please try again.');
             }
+        });
+    });
+
+    // Add event listeners for edit buttons
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const word = e.target.getAttribute('data-word');
+            const definition = e.target.getAttribute('data-definition');
+            const example = e.target.getAttribute('data-example');
+            showEditModal(word, definition, example);
         });
     });
 }
@@ -105,4 +123,111 @@ export function showExportMenu() {
             document.body.removeChild(exportOverlay);
         }
     });
+}
+
+export function showEditModal(word, definition, example) {
+    const editOverlay = document.createElement('div');
+    editOverlay.className = 'edit-overlay';
+    editOverlay.innerHTML = `
+        <div class="edit-modal">
+            <h3>Edit Word</h3>
+            <div class="edit-form">
+                <div class="edit-field">
+                    <label for="edit-word">Word</label>
+                    <input type="text" id="edit-word" value="${escapeAttr(word)}" />
+                </div>
+                <div class="edit-field">
+                    <label for="edit-definition">Definition</label>
+                    <textarea id="edit-definition" rows="3">${definition}</textarea>
+                </div>
+                <div class="edit-field">
+                    <label for="edit-example">Example</label>
+                    <textarea id="edit-example" rows="2">${example}</textarea>
+                </div>
+            </div>
+            <div class="edit-error" style="display: none;"></div>
+            <div class="edit-buttons">
+                <button class="edit-save-btn">Save</button>
+                <button class="edit-cancel-btn">Cancel</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(editOverlay);
+
+    const originalWord = word;
+    const wordInput = editOverlay.querySelector('#edit-word');
+    const definitionInput = editOverlay.querySelector('#edit-definition');
+    const exampleInput = editOverlay.querySelector('#edit-example');
+    const errorDiv = editOverlay.querySelector('.edit-error');
+    const saveBtn = editOverlay.querySelector('.edit-save-btn');
+
+    // Focus on word input
+    wordInput.focus();
+    wordInput.select();
+
+    // Save handler
+    const handleSave = async () => {
+        const newWord = wordInput.value.trim();
+        const newDefinition = definitionInput.value.trim();
+        const newExample = exampleInput.value.trim();
+
+        if (!newWord || !newDefinition) {
+            errorDiv.textContent = 'Word and definition are required.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        saveBtn.textContent = 'Saving...';
+        saveBtn.disabled = true;
+
+        const result = await updateWord(originalWord, newWord, newDefinition, newExample);
+
+        if (result === true) {
+            document.body.removeChild(editOverlay);
+            await displaySavedWords();
+        } else if (result && result.error === 'duplicate') {
+            errorDiv.textContent = result.message;
+            errorDiv.style.display = 'block';
+            saveBtn.textContent = 'Save';
+            saveBtn.disabled = false;
+        } else {
+            errorDiv.textContent = 'Failed to update word. Please try again.';
+            errorDiv.style.display = 'block';
+            saveBtn.textContent = 'Save';
+            saveBtn.disabled = false;
+        }
+    };
+
+    saveBtn.addEventListener('click', handleSave);
+
+    // Enter key to save (only in word input, not textareas)
+    wordInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            handleSave();
+        }
+    });
+
+    // Cancel handler
+    const closeModal = () => {
+        document.body.removeChild(editOverlay);
+    };
+
+    editOverlay.querySelector('.edit-cancel-btn').addEventListener('click', closeModal);
+
+    // Close on overlay click
+    editOverlay.addEventListener('click', (e) => {
+        if (e.target === editOverlay) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
 }

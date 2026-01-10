@@ -302,10 +302,36 @@ input[type="text"]::placeholder {
     margin-bottom: 0.5rem;
 }
 
+.saved-word-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
 .saved-word-item h4 {
     color: #8B7355;
     font-size: 1.3rem;
     margin: 0;
+}
+
+.edit-btn {
+    background: transparent;
+    color: #8B7355;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+    background: #8B7355;
+    color: white;
 }
 
 .delete-btn {
@@ -333,6 +359,14 @@ input[type="text"]::placeholder {
     font-size: 1.05rem;
     line-height: 1.6;
     margin-bottom: 0.5rem;
+}
+
+.saved-example {
+    color: #6D5C4D;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    font-style: italic;
 }
 
 .saved-timestamp {
@@ -1017,5 +1051,129 @@ input[type="text"]::placeholder {
 }
 
 .export-cancel-btn:hover {
+    background: #C4B49F;
+}
+
+/* Edit Modal Styles */
+.edit-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+.edit-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    animation: slideIn 0.3s ease;
+}
+
+.edit-modal h3 {
+    color: #8B7355;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.edit-field label {
+    color: #6D5C4D;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.edit-field input,
+.edit-field textarea {
+    padding: 0.75rem 1rem;
+    border: 2px solid #D4C5B0;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    resize: vertical;
+}
+
+.edit-field input:focus,
+.edit-field textarea:focus {
+    outline: none;
+    border-color: #8B7355;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+}
+
+.edit-error {
+    color: #A0522D;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.5rem;
+    background: #FDF0E6;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.edit-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.edit-save-btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    background: #8B7355;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-save-btn:hover:not(:disabled) {
+    background: #7A6349;
+    transform: translateY(-1px);
+}
+
+.edit-save-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.edit-cancel-btn {
+    flex: 1;
+    padding: 0.75rem 1.5rem;
+    background: #D4C5B0;
+    color: #6D5C4D;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.edit-cancel-btn:hover {
     background: #C4B49F;
 }
