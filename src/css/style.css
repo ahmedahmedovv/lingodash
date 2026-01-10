@@ -875,8 +875,20 @@ input[type="text"]::placeholder {
 .batch-actions {
     margin-top: 1.5rem;
     display: flex;
+    flex-direction: column;
     gap: 1rem;
-    justify-content: center;
+    align-items: center;
+}
+
+.auto-save-notice {
+    color: #27ae60;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    background: #d4edda;
+    border-radius: 8px;
+    border: 2px solid #c3e6cb;
+    margin: 0;
 }
 
 .batch-save-all-btn {

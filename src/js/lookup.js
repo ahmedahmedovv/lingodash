@@ -130,9 +130,31 @@ async function batchLookup(words) {
     batchProgress.textContent = `Looking up ${words.length} word${words.length > 1 ? 's' : ''}...`;
     batchLookupBtn.disabled = true;
     
+    let savedCount = 0;
+    
     try {
-        // Fetch all definitions in parallel
-        const results = await getBatchWordDefinitions(words);
+        // Fetch all definitions with rate limiting, progress updates, and auto-save
+        const results = await getBatchWordDefinitions(
+            words, 
+            // Progress callback
+            (current, total, currentWord) => {
+                batchProgress.textContent = `Looking up word ${current}/${total}: "${currentWord}"... (${savedCount} saved)`;
+            },
+            // Auto-save callback - saves each word as it's looked up
+            (result) => {
+                if (result.success) {
+                    saveWord(result.word, result.definition, result.example);
+                    savedCount++;
+                    batchProgress.textContent = `Looking up... (${savedCount} saved so far)`;
+                    
+                    // Update saved words tab if visible
+                    const savedWordsPanel = document.getElementById('saved-panel');
+                    if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
+                        displaySavedWords();
+                    }
+                }
+            }
+        );
         batchResults = results;
         
         // Hide progress
@@ -140,7 +162,7 @@ async function batchLookup(words) {
         batchLookupBtn.disabled = false;
         
         // Display results
-        displayBatchResults(results);
+        displayBatchResults(results, savedCount);
         
     } catch (error) {
         batchProgress.textContent = `Error: ${error.message}`;
@@ -149,7 +171,7 @@ async function batchLookup(words) {
     }
 }
 
-function displayBatchResults(results) {
+function displayBatchResults(results, alreadySavedCount = 0) {
     const batchResultsDiv = document.getElementById('batchResults');
     
     if (results.length === 0) {
@@ -157,14 +179,14 @@ function displayBatchResults(results) {
         return;
     }
     
-    // Display results
+    // Display results - successful words are already auto-saved
     batchResultsDiv.innerHTML = results.map((result, index) => {
         if (result.success) {
             return `
                 <div class="batch-result-card" data-index="${index}">
                     <div class="batch-result-header">
                         <h4>${result.word}</h4>
-                        <button class="save-btn batch-save-btn" data-index="${index}">💾 Save</button>
+                        <button class="save-btn batch-save-btn" data-index="${index}" disabled style="background: #27ae60;">✓ Auto-Saved</button>
                     </div>
                     <p><strong>Definition:</strong> ${result.definition}</p>
                     ${result.example ? `<p class="example-text"><strong>Example:</strong> ${result.example}</p>` : ''}
@@ -187,65 +209,11 @@ function displayBatchResults(results) {
     if (successCount > 0) {
         const actionsHtml = `
             <div class="batch-actions">
-                <button id="batchSaveAllBtn" class="batch-save-all-btn">💾 Save All (${successCount})</button>
+                <p class="auto-save-notice">✅ ${successCount} word${successCount > 1 ? 's' : ''} auto-saved to your collection</p>
                 <button id="batchClearBtn" class="batch-clear-btn">Clear Results</button>
             </div>
         `;
         batchResultsDiv.insertAdjacentHTML('afterend', actionsHtml);
-        
-        // Add event listeners for individual save buttons
-        document.querySelectorAll('.batch-save-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const index = parseInt(e.target.getAttribute('data-index'));
-                const result = batchResults[index];
-                if (result.success) {
-                    saveWord(result.word, result.definition, result.example);
-                    
-                    // Update button state
-                    e.target.innerHTML = '✓ Saved!';
-                    e.target.style.background = '#27ae60';
-                    e.target.disabled = true;
-                    
-                    // Update saved words tab if visible
-                    const savedWordsPanel = document.getElementById('saved-panel');
-                    if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
-                        displaySavedWords();
-                    }
-                }
-            });
-        });
-        
-        // Save all button
-        const saveAllBtn = document.getElementById('batchSaveAllBtn');
-        if (saveAllBtn) {
-            saveAllBtn.addEventListener('click', () => {
-                let savedCount = 0;
-                batchResults.forEach(result => {
-                    if (result.success) {
-                        saveWord(result.word, result.definition, result.example);
-                        savedCount++;
-                    }
-                });
-                
-                // Update button state
-                saveAllBtn.innerHTML = `✓ Saved ${savedCount} word${savedCount > 1 ? 's' : ''}!`;
-                saveAllBtn.style.background = '#229954';
-                saveAllBtn.disabled = true;
-                
-                // Disable individual save buttons
-                document.querySelectorAll('.batch-save-btn').forEach(btn => {
-                    btn.innerHTML = '✓ Saved!';
-                    btn.style.background = '#27ae60';
-                    btn.disabled = true;
-                });
-                
-                // Update saved words tab if visible
-                const savedWordsPanel = document.getElementById('saved-panel');
-                if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
-                    displaySavedWords();
-                }
-            });
-        }
         
         // Clear button
         const clearBtn = document.getElementById('batchClearBtn');
