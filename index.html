@@ -20,11 +20,23 @@
                 <div class="tab-content">
                     <!-- Lookup Tab -->
                     <div class="tab-panel active" id="lookup-panel">
-                        <div class="input-wrapper">
+                        <div class="lookup-mode-toggle">
+                            <button class="mode-btn active" data-mode="single">Single Word</button>
+                            <button class="mode-btn" data-mode="batch">Batch Lookup</button>
+                        </div>
+                        
+                        <div class="input-wrapper" id="singleMode">
                             <input type="text" id="textInput" placeholder="Type a word and press Enter...">
                             <div id="definitionBox" class="definition-box">
                                 <div id="definitionContent"></div>
                             </div>
+                        </div>
+                        
+                        <div class="batch-wrapper" id="batchMode" style="display: none;">
+                            <textarea id="batchInput" placeholder="Enter multiple words (one per line)&#10;Example:&#10;apple&#10;courage&#10;serendipity"></textarea>
+                            <button id="batchLookupBtn" class="batch-lookup-btn">🔍 Lookup All Words</button>
+                            <div id="batchProgress" class="batch-progress" style="display: none;"></div>
+                            <div id="batchResults" class="batch-results"></div>
                         </div>
                     </div>
                     

@@ -67,3 +67,28 @@ If it's not a valid word, say so briefly.`
         throw new Error(errorMessage);
     }
 }
+
+export async function getBatchWordDefinitions(words) {
+    // Filter out empty words and remove duplicates
+    const uniqueWords = [...new Set(words.filter(w => w.trim()))];
+    
+    if (uniqueWords.length === 0) {
+        return [];
+    }
+
+    // Lookup all words in parallel for better performance
+    const promises = uniqueWords.map(async (word) => {
+        try {
+            const result = await getWordDefinition(word);
+            return { ...result, success: true };
+        } catch (error) {
+            return { 
+                word, 
+                error: error.message, 
+                success: false 
+            };
+        }
+    });
+
+    return await Promise.all(promises);
+}
