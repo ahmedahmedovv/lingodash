@@ -1,11 +1,13 @@
 # LingoDash
 
-A simple, elegant web application featuring a centered text input box with modern styling.
+A simple, elegant web application that provides instant word definitions using Mistral AI.
 
 ## 🚀 Features
 
 - Clean, modern UI with gradient background
 - Centered text input with smooth animations
+- **AI-powered word definitions** using Mistral AI
+- Real-time definition lookup with debouncing
 - Responsive design
 - Pure HTML, CSS, and JavaScript (no dependencies)
 
@@ -13,7 +15,8 @@ A simple, elegant web application featuring a centered text input box with moder
 
 ### Prerequisites
 
-No prerequisites needed! Just a modern web browser.
+- Node.js (v18 or higher)
+- npm or yarn
 
 ### Installation
 
@@ -23,22 +26,36 @@ git clone https://github.com/yourusername/lingodash.git
 cd lingodash
 ```
 
-2. Open `index.html` in your web browser:
+2. Install dependencies:
 ```bash
-open index.html
+npm install
 ```
 
-Or simply double-click the `index.html` file.
+3. Start the development server:
+```bash
+npm run dev
+```
+
+4. Open your browser to the URL shown in the terminal (usually `http://localhost:5173`)
 
 ## 🛠️ Usage
 
-The app displays a text input box in the center of the page. Type anything into the box and the value will be logged to the browser console.
+1. Type any word into the text input box
+2. Wait 800ms or press Enter
+3. The app will fetch and display a definition using Mistral AI
+4. The definition appears below the input box with a clean, readable format
+
+**Note:** The app uses debouncing to avoid excessive API calls while you're typing.
 
 ## 📁 Project Structure
 
 ```
 lingodash/
-├── index.html      # Main HTML file with embedded CSS and JavaScript
+├── index.html      # Main HTML file
+├── style.css       # Styling
+├── main.js         # JavaScript with Mistral AI integration
+├── package.json    # Dependencies and scripts
+├── LICENSE         # MIT License
 └── README.md       # Project documentation
 ```
 
