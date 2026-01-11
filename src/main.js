@@ -1,7 +1,7 @@
 import './css/style.css';
 import { initLookup } from './js/lookup.js';
 import { initTabs, displaySavedWords, showExportMenu, initFilterControls } from './js/ui.js';
-import { initExercise } from './js/exercise.js';
+import { initExercise, prefetchExerciseData } from './js/exercise.js';
 import { clearAllWords } from './js/storage.js';
 import { signIn, signUp, signOut, onAuthStateChange, getCurrentUser } from './js/auth.js';
 
@@ -218,7 +218,10 @@ function initAppFeatures() {
 
     // Initialize exercise
     initExercise();
-    
+
+    // Pre-fetch exercise data in background for instant loading
+    prefetchExerciseData();
+
     // Clear history button
     const clearHistoryBtn = document.getElementById('clearHistory');
     if (clearHistoryBtn) {

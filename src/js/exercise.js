@@ -7,6 +7,32 @@ let correctAnswers = 0;
 let masteredWords = new Set(); // Track words answered correctly in this session
 let totalAttempts = 0; // Track total questions answered
 
+// Exercise data cache for instant loading
+let exerciseDataCache = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+// Pre-fetch exercise data when app initializes
+export async function prefetchExerciseData() {
+    try {
+        const [savedWords, dueWords] = await Promise.all([
+            getSavedWords(),
+            getWordsDueForReview()
+        ]);
+
+        exerciseDataCache = { savedWords, dueWords };
+        cacheTimestamp = Date.now();
+    } catch (error) {
+        console.error('Failed to pre-fetch exercise data:', error);
+    }
+}
+
+// Check if cached data is still valid
+function isCacheValid() {
+    return exerciseDataCache && cacheTimestamp &&
+           (Date.now() - cacheTimestamp) < CACHE_DURATION;
+}
+
 // Session size preference management
 const SESSION_SIZE_KEY = 'lingodash_session_size';
 const DEFAULT_SESSION_SIZE = 25;
@@ -90,12 +116,30 @@ function updateExerciseProgress() {
 }
 
 async function startExercise() {
-    // Show loading state
+    // Show loading state (only if we need to fetch data)
     const exerciseContent = document.getElementById('exerciseContent');
-    exerciseContent.innerHTML = '<p class="loading">Loading words...</p>';
-    
-    const savedWords = await getSavedWords();
-    
+
+    let savedWords, dueWords;
+
+    // Try to use cached data first
+    if (isCacheValid()) {
+        savedWords = exerciseDataCache.savedWords;
+        dueWords = exerciseDataCache.dueWords;
+    } else {
+        // Show loading state only when fetching
+        exerciseContent.innerHTML = '<p class="loading">Loading words...</p>';
+
+        // Run both database calls in parallel to reduce loading time
+        [savedWords, dueWords] = await Promise.all([
+            getSavedWords(),
+            getWordsDueForReview()
+        ]);
+
+        // Update cache
+        exerciseDataCache = { savedWords, dueWords };
+        cacheTimestamp = Date.now();
+    }
+
     if (savedWords.length < 3) {
         exerciseContent.innerHTML = '<p class="error">You need at least 3 saved words to start the exercise!</p>';
         setTimeout(() => {
@@ -103,12 +147,9 @@ async function startExercise() {
         }, 3000);
         return;
     }
-    
+
     // Get session size preference
     const sessionSize = getSessionSize();
-    
-    // Get words due for review (uses spaced repetition)
-    let dueWords = await getWordsDueForReview();
     
     // Prioritize words due for review, but limit to session size
     let selectedWords = [];
