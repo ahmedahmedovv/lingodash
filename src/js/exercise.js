@@ -354,17 +354,17 @@ async function checkAnswer() {
     const userAnswer = answerInput.value.trim().toLowerCase();
     const currentWord = exerciseWords[currentQuestionIndex];
     const correctWord = currentWord.word.toLowerCase();
-    
+
     if (!userAnswer) {
         return; // Don't submit empty answers
     }
-    
+
     const isCorrect = userAnswer === correctWord;
     const feedbackDiv = document.getElementById('answerFeedback');
-    
+
     // Increment total attempts
     totalAttempts++;
-    
+
     // Disable input and update hint text for continue
     answerInput.disabled = true;
     const hintText = document.querySelector('.press-enter-hint');
@@ -375,9 +375,9 @@ async function checkAnswer() {
 
     // Show edit/delete buttons after answer is submitted
     document.getElementById('exerciseCardActions').style.display = 'flex';
-    
-    // Update spaced repetition data
-    await updateWordReview(currentWord.word, isCorrect);
+
+    // Update spaced repetition data (non-blocking - runs in background)
+    updateWordReview(currentWord.word, isCorrect);
     
     // Don't show word statistics - keeping UI minimal
     // displayWordStats(currentWord);
@@ -436,6 +436,7 @@ async function checkAnswer() {
     
     currentQuestionIndex++;
     updateExerciseProgress();
+
     // Keep next button hidden - user must press Enter to continue
 }
 
