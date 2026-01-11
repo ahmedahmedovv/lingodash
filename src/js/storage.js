@@ -65,17 +65,6 @@ export async function getSavedWordsPaginated(page = 1, pageSize = 50, filter = '
                 break;
         }
 
-        // Get total count
-        const { count, error: countError } = await countQuery;
-
-        if (countError) {
-            console.error('Error fetching word count:', countError);
-            return { words: [], totalCount: 0, totalPages: 0, currentPage: 1 };
-        }
-
-        const totalCount = count || 0;
-        const totalPages = Math.ceil(totalCount / pageSize);
-
         // Build data query
         let dataQuery = supabase
             .from('words')
@@ -98,15 +87,27 @@ export async function getSavedWordsPaginated(page = 1, pageSize = 50, filter = '
                 break;
         }
 
-        // Get paginated data
-        const { data, error } = await dataQuery
-            .order('timestamp', { ascending: false })
-            .range(offset, offset + pageSize - 1);
+        // Run both queries in parallel to reduce loading time
+        const [countResult, dataResult] = await Promise.all([
+            countQuery,
+            dataQuery.order('timestamp', { ascending: false }).range(offset, offset + pageSize - 1)
+        ]);
+
+        const { count, error: countError } = countResult;
+        const { data, error } = dataResult;
+
+        if (countError) {
+            console.error('Error fetching word count:', countError);
+            return { words: [], totalCount: 0, totalPages: 0, currentPage: 1 };
+        }
 
         if (error) {
             console.error('Error fetching words:', error);
             return { words: [], totalCount: 0, totalPages: 0, currentPage: 1 };
         }
+
+        const totalCount = count || 0;
+        const totalPages = Math.ceil(totalCount / pageSize);
 
         // Transform database fields to match the app's expected format
         const words = (data || []).map(row => ({
