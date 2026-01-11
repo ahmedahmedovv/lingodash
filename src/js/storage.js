@@ -36,6 +36,65 @@ export async function getSavedWords() {
     }
 }
 
+// Get saved words with pagination
+export async function getSavedWordsPaginated(page = 1, pageSize = 50) {
+    try {
+        const userId = await getUserId();
+        const offset = (page - 1) * pageSize;
+
+        // Get total count
+        const { count, error: countError } = await supabase
+            .from('words')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId);
+
+        if (countError) {
+            console.error('Error fetching word count:', countError);
+            return { words: [], totalCount: 0, totalPages: 0, currentPage: 1 };
+        }
+
+        const totalCount = count || 0;
+        const totalPages = Math.ceil(totalCount / pageSize);
+
+        // Get paginated data
+        const { data, error } = await supabase
+            .from('words')
+            .select('*')
+            .eq('user_id', userId)
+            .order('timestamp', { ascending: false })
+            .range(offset, offset + pageSize - 1);
+
+        if (error) {
+            console.error('Error fetching words:', error);
+            return { words: [], totalCount: 0, totalPages: 0, currentPage: 1 };
+        }
+
+        // Transform database fields to match the app's expected format
+        const words = (data || []).map(row => ({
+            word: row.word,
+            definition: row.definition,
+            example: row.example,
+            timestamp: row.timestamp,
+            interval: row.interval,
+            easeFactor: row.ease_factor,
+            nextReview: row.next_review,
+            reviewCount: row.review_count,
+            correctCount: row.correct_count,
+            id: row.id
+        }));
+
+        return {
+            words,
+            totalCount,
+            totalPages,
+            currentPage: page
+        };
+    } catch (error) {
+        console.error('Error in getSavedWordsPaginated:', error);
+        return { words: [], totalCount: 0, totalPages: 0, currentPage: 1 };
+    }
+}
+
 // Check if a word exists in Supabase and return its data
 export async function getWordIfExists(word) {
     try {

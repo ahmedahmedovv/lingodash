@@ -1,22 +1,75 @@
-import { getSavedWords, deleteWord, updateWord, exportWords } from './storage.js';
+import { getSavedWordsPaginated, deleteWord, updateWord, exportWords } from './storage.js';
+
+// Pagination state
+let currentPage = 1;
+const PAGE_SIZE = 50;
 
 function escapeAttr(str) {
     return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-export async function displaySavedWords() {
+function renderPaginationControls(currentPage, totalPages) {
+    if (totalPages <= 1) return '';
+
+    const pages = [];
+    const maxVisible = 5;
+
+    // Calculate range of pages to show
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    // Adjust start if we're near the end
+    if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    // Previous button
+    pages.push(`<button class="pagination-btn" data-page="${currentPage - 1}" ${currentPage === 1 ? 'disabled' : ''}>Prev</button>`);
+
+    // First page + ellipsis
+    if (startPage > 1) {
+        pages.push(`<button class="pagination-btn" data-page="1">1</button>`);
+        if (startPage > 2) {
+            pages.push(`<span class="pagination-ellipsis">...</span>`);
+        }
+    }
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+        pages.push(`<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`);
+    }
+
+    // Last page + ellipsis
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            pages.push(`<span class="pagination-ellipsis">...</span>`);
+        }
+        pages.push(`<button class="pagination-btn" data-page="${totalPages}">${totalPages}</button>`);
+    }
+
+    // Next button
+    pages.push(`<button class="pagination-btn" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>`);
+
+    return pages.join('');
+}
+
+export async function displaySavedWords(page = 1) {
     const savedWordsList = document.getElementById('savedWordsList');
-    
+    const paginationControls = document.getElementById('paginationControls');
+
     // Show loading state
     savedWordsList.innerHTML = '<p class="loading">Loading words...</p>';
-    
-    const words = await getSavedWords();
-    
+    paginationControls.innerHTML = '';
+
+    const { words, totalCount, totalPages, currentPage: fetchedPage } = await getSavedWordsPaginated(page, PAGE_SIZE);
+    currentPage = fetchedPage;
+
     if (words.length === 0) {
         savedWordsList.innerHTML = '<p class="empty-state">No saved words yet</p>';
+        paginationControls.innerHTML = '';
         return;
     }
-    
+
     savedWordsList.innerHTML = words.map((item, index) => `
         <div class="saved-word-item">
             <div class="saved-word-header">
@@ -30,14 +83,31 @@ export async function displaySavedWords() {
             ${item.example ? `<p class="saved-example">${item.example}</p>` : ''}
         </div>
     `).join('');
-    
+
+    // Render pagination controls
+    paginationControls.innerHTML = renderPaginationControls(currentPage, totalPages);
+
+    // Add event listeners for pagination buttons
+    paginationControls.querySelectorAll('.pagination-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const targetPage = parseInt(e.target.getAttribute('data-page'), 10);
+            if (!isNaN(targetPage) && targetPage !== currentPage) {
+                await displaySavedWords(targetPage);
+                // Scroll to top of the list
+                savedWordsList.scrollTop = 0;
+            }
+        });
+    });
+
     // Add event listeners for delete buttons
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const word = e.target.getAttribute('data-word');
             const success = await deleteWord(word);
             if (success) {
-                await displaySavedWords();
+                // Stay on current page, or go to previous if current page is empty
+                const pageToShow = words.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage;
+                await displaySavedWords(pageToShow);
             } else {
                 alert('Failed to delete word. Please try again.');
             }
@@ -184,7 +254,7 @@ export function showEditModal(word, definition, example) {
 
         if (result === true) {
             document.body.removeChild(editOverlay);
-            await displaySavedWords();
+            await displaySavedWords(currentPage);
         } else if (result && result.error === 'duplicate') {
             errorDiv.textContent = result.message;
             errorDiv.style.display = 'block';

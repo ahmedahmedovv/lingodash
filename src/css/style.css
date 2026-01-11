@@ -371,6 +371,67 @@ input[type="text"]::placeholder {
     background: #A89F8F;
 }
 
+/* Pagination Styles */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 0;
+    margin-top: 1rem;
+    border-top: 1px solid #E8DFD0;
+}
+
+.pagination-controls:empty {
+    display: none;
+}
+
+.pagination-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 0.5rem 0.75rem;
+    background: transparent;
+    color: #6D5C4D;
+    border: 1px solid #D4C5B0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-btn:hover:not(:disabled):not(.active) {
+    border-color: #8B7355;
+    color: #8B7355;
+    background: #FAF7F0;
+}
+
+.pagination-btn.active {
+    background: #8B7355;
+    color: white;
+    border-color: #8B7355;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+    color: #A89F8F;
+    padding: 0 0.25rem;
+    font-weight: 500;
+}
+
+.pagination-info {
+    color: #6D5C4D;
+    font-size: 0.85rem;
+    margin-left: 1rem;
+}
+
 /* Exercise Tab Styles */
 .exercise-section {
     text-align: center;

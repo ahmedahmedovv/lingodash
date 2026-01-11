@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock storage module before importing ui
 vi.mock('./storage.js', () => ({
-    getSavedWords: vi.fn(),
+    getSavedWordsPaginated: vi.fn(),
     deleteWord: vi.fn(),
     updateWord: vi.fn(),
     exportWords: vi.fn()
@@ -17,6 +17,7 @@ describe('UI Functions', () => {
         // Reset DOM before each test
         document.body.innerHTML = `
             <div id="savedWordsList"></div>
+            <div id="paginationControls"></div>
             <div class="tab-header">
                 <button class="tab-btn" data-tab="lookup">Lookup</button>
                 <button class="tab-btn" data-tab="saved">Saved</button>
@@ -30,7 +31,12 @@ describe('UI Functions', () => {
 
     describe('displaySavedWords', () => {
         it('should display empty state when no words are saved', async () => {
-            storage.getSavedWords.mockResolvedValue([]);
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: [],
+                totalCount: 0,
+                totalPages: 0,
+                currentPage: 1
+            });
 
             await displaySavedWords();
 
@@ -54,7 +60,12 @@ describe('UI Functions', () => {
                 }
             ];
 
-            storage.getSavedWords.mockResolvedValue(mockWords);
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: mockWords,
+                totalCount: 2,
+                totalPages: 1,
+                currentPage: 1
+            });
 
             await displaySavedWords();
 
@@ -75,7 +86,12 @@ describe('UI Functions', () => {
                 }
             ];
 
-            storage.getSavedWords.mockResolvedValue(mockWords);
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: mockWords,
+                totalCount: 1,
+                totalPages: 1,
+                currentPage: 1
+            });
 
             await displaySavedWords();
 
@@ -94,7 +110,12 @@ describe('UI Functions', () => {
                 }
             ];
 
-            storage.getSavedWords.mockResolvedValue(mockWords);
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: mockWords,
+                totalCount: 1,
+                totalPages: 1,
+                currentPage: 1
+            });
 
             await displaySavedWords();
 
@@ -113,7 +134,12 @@ describe('UI Functions', () => {
                 }
             ];
 
-            storage.getSavedWords.mockResolvedValue(mockWords);
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: mockWords,
+                totalCount: 1,
+                totalPages: 1,
+                currentPage: 1
+            });
             storage.deleteWord.mockResolvedValue(true);
 
             await displaySavedWords();
@@ -137,12 +163,62 @@ describe('UI Functions', () => {
                 }
             ];
 
-            storage.getSavedWords.mockResolvedValue(mockWords);
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: mockWords,
+                totalCount: 1,
+                totalPages: 1,
+                currentPage: 1
+            });
 
             await displaySavedWords();
 
             const list = document.getElementById('savedWordsList');
             expect(list.innerHTML).toContain('This is a test example.');
+        });
+
+        it('should display pagination controls when multiple pages exist', async () => {
+            const mockWords = Array.from({ length: 50 }, (_, i) => ({
+                word: `word${i}`,
+                definition: `definition ${i}`,
+                example: `Example ${i}`,
+                timestamp: new Date().toISOString()
+            }));
+
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: mockWords,
+                totalCount: 100,
+                totalPages: 2,
+                currentPage: 1
+            });
+
+            await displaySavedWords();
+
+            const paginationControls = document.getElementById('paginationControls');
+            expect(paginationControls.innerHTML).toContain('pagination-btn');
+            expect(paginationControls.innerHTML).toContain('Next');
+        });
+
+        it('should not display pagination controls for single page', async () => {
+            const mockWords = [
+                {
+                    word: 'test',
+                    definition: 'a test',
+                    example: 'Example',
+                    timestamp: new Date().toISOString()
+                }
+            ];
+
+            storage.getSavedWordsPaginated.mockResolvedValue({
+                words: mockWords,
+                totalCount: 1,
+                totalPages: 1,
+                currentPage: 1
+            });
+
+            await displaySavedWords();
+
+            const paginationControls = document.getElementById('paginationControls');
+            expect(paginationControls.innerHTML).toBe('');
         });
     });
 

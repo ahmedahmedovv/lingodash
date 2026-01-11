@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock storage module before importing ui
 vi.mock('./storage.js', () => ({
-    getSavedWords: vi.fn(),
+    getSavedWordsPaginated: vi.fn(),
     deleteWord: vi.fn(),
     updateWord: vi.fn(),
     exportWords: vi.fn()
@@ -16,6 +16,7 @@ describe('UI Performance Tests', () => {
         vi.clearAllMocks();
         document.body.innerHTML = `
             <div id="savedWordsList"></div>
+            <div id="paginationControls"></div>
         `;
     });
 
@@ -27,7 +28,12 @@ describe('UI Performance Tests', () => {
             timestamp: new Date().toISOString()
         }));
 
-        storage.getSavedWords.mockResolvedValue(mockWords);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: mockWords,
+            totalCount: mockWords.length,
+            totalPages: 1,
+            currentPage: 1
+        });
 
         const startTime = performance.now();
         await displaySavedWords();
@@ -48,7 +54,12 @@ describe('UI Performance Tests', () => {
             timestamp: new Date().toISOString()
         }));
 
-        storage.getSavedWords.mockResolvedValue(mockWords);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: mockWords,
+            totalCount: mockWords.length,
+            totalPages: 1,
+            currentPage: 1
+        });
 
         const iterations = 50;
         const startTime = performance.now();
@@ -72,7 +83,12 @@ describe('UI Performance Tests', () => {
             timestamp: new Date().toISOString()
         }));
 
-        storage.getSavedWords.mockResolvedValue(mockWords);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: mockWords,
+            totalCount: mockWords.length,
+            totalPages: 1,
+            currentPage: 1
+        });
 
         const startTime = performance.now();
         await displaySavedWords();
@@ -83,7 +99,12 @@ describe('UI Performance Tests', () => {
     });
 
     it('should handle empty state rendering quickly', async () => {
-        storage.getSavedWords.mockResolvedValue([]);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: [],
+            totalCount: 0,
+            totalPages: 0,
+            currentPage: 1
+        });
 
         const iterations = 100;
         const startTime = performance.now();
@@ -107,7 +128,12 @@ describe('UI Performance Tests', () => {
             timestamp: new Date().toISOString()
         }));
 
-        storage.getSavedWords.mockResolvedValue(mockWords);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: mockWords,
+            totalCount: mockWords.length,
+            totalPages: 1,
+            currentPage: 1
+        });
         storage.deleteWord.mockResolvedValue(true);
 
         const startTime = performance.now();
@@ -130,7 +156,12 @@ describe('UI Performance Tests', () => {
             timestamp: new Date().toISOString()
         }));
 
-        storage.getSavedWords.mockResolvedValue(mockWords);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: mockWords,
+            totalCount: mockWords.length,
+            totalPages: 1,
+            currentPage: 1
+        });
 
         const startTime = performance.now();
         await displaySavedWords();
@@ -148,7 +179,12 @@ describe('UI Performance Tests', () => {
             timestamp: new Date().toISOString()
         }));
 
-        storage.getSavedWords.mockResolvedValue(mockWords);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: mockWords,
+            totalCount: mockWords.length,
+            totalPages: 1,
+            currentPage: 1
+        });
 
         // First render
         const firstRenderStart = performance.now();
@@ -175,7 +211,12 @@ describe('UI Performance Tests', () => {
             timestamp: new Date(Date.now() - i * 86400000).toISOString()
         }));
 
-        storage.getSavedWords.mockResolvedValue(mockWords);
+        storage.getSavedWordsPaginated.mockResolvedValue({
+            words: mockWords,
+            totalCount: mockWords.length,
+            totalPages: 1,
+            currentPage: 1
+        });
 
         const startTime = performance.now();
         await displaySavedWords();
