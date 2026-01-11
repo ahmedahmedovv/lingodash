@@ -1,6 +1,6 @@
 import { getWordDefinition, getBatchWordDefinitions } from './api.js';
 import { saveWord } from './storage.js';
-import { displaySavedWords } from './ui.js';
+import { displaySavedWords, validateWordExample } from './ui.js';
 
 const definitionBox = document.getElementById('definitionBox');
 const definitionContent = document.getElementById('definitionContent');
@@ -75,12 +75,18 @@ async function lookupWord(word) {
 
     try {
         const result = await getWordDefinition(word);
-        
+
         const isAlreadySaved = result.fromSupabase;
         const saveButtonText = isAlreadySaved ? '✓ Already Saved (Update)' : '💾 Save Word';
-        const sourceIndicator = isAlreadySaved 
-            ? '<p style="color: #3498db; font-size: 0.9em; margin-top: 8px;">✓ This word is already in your collection</p>' 
-            : '<p style="color: #27ae60; font-size: 0.9em; margin-top: 8px;">🆕 New word fetched from AI</p>';
+        let sourceIndicator = '';
+
+        if (isAlreadySaved) {
+            sourceIndicator = '<p style="color: #3498db; font-size: 0.9em; margin-top: 8px;">✓ This word is already in your collection</p>';
+        } else if (result.potentiallyInvalid) {
+            sourceIndicator = '<p style="color: #f39c12; font-size: 0.9em; margin-top: 8px;">⚠️ AI example may need review</p>';
+        } else {
+            sourceIndicator = '<p style="color: #27ae60; font-size: 0.9em; margin-top: 8px;">🆕 New word fetched from AI</p>';
+        }
 
         definitionContent.innerHTML = `
             <h3>${result.word}</h3>
@@ -94,12 +100,50 @@ async function lookupWord(word) {
         const saveBtn = document.getElementById('saveWordBtn');
         if (saveBtn) {
             saveBtn.addEventListener('click', async () => {
+                // Validate that the word appears in the example
+                const validation = validateWordExample(result.word, result.example);
+                if (!validation.valid) {
+                    // Show validation error
+                    const errorDiv = document.createElement('div');
+                    errorDiv.style.cssText = `
+                        color: #A0522D;
+                        background: #FDF0E6;
+                        border: 1px solid #A0522D;
+                        border-radius: 4px;
+                        padding: 8px 12px;
+                        margin-top: 8px;
+                        font-size: 0.9em;
+                    `;
+                    errorDiv.textContent = validation.error;
+
+                    // Remove any existing error message
+                    const existingError = definitionContent.querySelector('.validation-error');
+                    if (existingError) {
+                        existingError.remove();
+                    }
+
+                    // Add the error message
+                    definitionContent.appendChild(errorDiv);
+                    errorDiv.classList.add('validation-error');
+
+                    // Focus on the error and scroll to it
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                    return;
+                }
+
+                // Remove any existing validation errors
+                const existingError = definitionContent.querySelector('.validation-error');
+                if (existingError) {
+                    existingError.remove();
+                }
+
                 // Save word to Supabase (async operation)
                 saveBtn.innerHTML = '💾 Saving...';
                 saveBtn.disabled = true;
-                
+
                 const success = await saveWord(result.word, result.definition, result.example);
-                
+
                 if (success) {
                     // Only update the UI if user is on the saved words tab
                     // This prevents unnecessary DOM manipulation when user is on lookup tab
@@ -107,11 +151,11 @@ async function lookupWord(word) {
                     if (savedWordsPanel && savedWordsPanel.classList.contains('active')) {
                         await displaySavedWords();
                     }
-                    
+
                     // Provide immediate visual feedback
                     saveBtn.innerHTML = '✓ Saved!';
                     saveBtn.style.background = '#27ae60';
-                    
+
                     setTimeout(() => {
                         saveBtn.innerHTML = '💾 Save Word';
                         saveBtn.style.background = '';
@@ -121,7 +165,7 @@ async function lookupWord(word) {
                     // Handle save error
                     saveBtn.innerHTML = '❌ Error';
                     saveBtn.style.background = '#e74c3c';
-                    
+
                     setTimeout(() => {
                         saveBtn.innerHTML = '💾 Save Word';
                         saveBtn.style.background = '';

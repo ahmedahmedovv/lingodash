@@ -4,19 +4,22 @@ import { supabase, getUserId } from './supabase.js';
 export async function getSavedWords() {
     try {
         const userId = await getUserId();
-        
+
+        // Use a very high limit to get all records (works in both browser and test environments)
         const { data, error } = await supabase
             .from('words')
             .select('*')
             .eq('user_id', userId)
             .order('timestamp', { ascending: false })
-            .limit(99999);
-        
+            .limit(100000); // Very high limit to get all records
+
         if (error) {
             console.error('Error fetching words:', error);
             return [];
         }
-        
+
+        console.log(`Fetched ${data?.length || 0} total words from database`);
+
         // Transform database fields to match the app's expected format
         return (data || []).map(row => ({
             word: row.word,
@@ -90,7 +93,7 @@ export async function getSavedWordsPaginated(page = 1, pageSize = 50, filter = '
         // Run both queries in parallel to reduce loading time
         const [countResult, dataResult] = await Promise.all([
             countQuery,
-            dataQuery.order('timestamp', { ascending: false }).range(offset, offset + pageSize - 1)
+            dataQuery.order('timestamp', { ascending: false }).limit(pageSize)
         ]);
 
         const { count, error: countError } = countResult;

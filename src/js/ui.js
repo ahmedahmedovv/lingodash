@@ -297,6 +297,15 @@ export function showEditModal(word, definition, example) {
             return;
         }
 
+        // Validate that the word appears in the example
+        const validation = validateWordExample(newWord, newExample);
+        if (!validation.valid) {
+            errorDiv.textContent = validation.error;
+            errorDiv.style.display = 'block';
+            exampleInput.focus();
+            return;
+        }
+
         saveBtn.textContent = 'Saving...';
         saveBtn.disabled = true;
 
@@ -447,6 +456,30 @@ function containsWord(example, targetWord) {
     console.log('🔍 Word Validation: Regex test result:', result);
 
     return result;
+}
+
+// Word validation function
+export function validateWordExample(word, example) {
+    if (!word || !word.trim()) {
+        return { valid: false, error: "Word is required" };
+    }
+
+    if (!example || !example.trim()) {
+        return { valid: false, error: "Example sentence is required" };
+    }
+
+    // Case-insensitive check for the word (word boundaries to avoid partial matches)
+    const regex = new RegExp(`\\b${word}\\b`, 'i');
+    const containsWord = regex.test(example);
+
+    if (!containsWord) {
+        return {
+            valid: false,
+            error: `The word "${word}" must appear in the example sentence`
+        };
+    }
+
+    return { valid: true };
 }
 
 // Initialize filter button event listeners
