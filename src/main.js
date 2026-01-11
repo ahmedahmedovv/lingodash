@@ -5,20 +5,18 @@ import { initExercise, prefetchExerciseData } from './js/exercise.js';
 import { clearAllWords } from './js/storage.js';
 import { signIn, signUp, signOut, onAuthStateChange, getCurrentUser } from './js/auth.js';
 
-// UI elements
-const authWrapper = document.getElementById('authWrapper');
-const appWrapper = document.getElementById('appWrapper');
-const userEmailDisplay = document.getElementById('userEmail');
-const logoutBtn = document.getElementById('logoutBtn');
-
 // Show auth UI and hide app
 function showAuthUI() {
+    const authWrapper = document.getElementById('authWrapper');
+    const appWrapper = document.getElementById('appWrapper');
     if (authWrapper) authWrapper.style.display = 'flex';
     if (appWrapper) appWrapper.style.display = 'none';
 }
 
 // Show app UI and hide auth
 function showAppUI() {
+    const authWrapper = document.getElementById('authWrapper');
+    const appWrapper = document.getElementById('appWrapper');
     if (authWrapper) authWrapper.style.display = 'none';
     if (appWrapper) appWrapper.style.display = 'flex';
 }
@@ -26,9 +24,10 @@ function showAppUI() {
 // Update UI based on auth state
 async function updateAuthUI() {
     const user = await getCurrentUser();
-    
+
     if (user) {
         showAppUI();
+        const userEmailDisplay = document.getElementById('userEmail');
         if (userEmailDisplay) {
             userEmailDisplay.textContent = user.email || 'User';
         }
@@ -132,6 +131,7 @@ function initAuthUI() {
     });
     
     // Logout button
+    const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
             const result = await signOut();
@@ -188,7 +188,7 @@ function switchAuthTab(mode) {
 }
 
 // Initialize the app
-async function initApp() {
+export async function initApp() {
     // Initialize auth UI
     initAuthUI();
     
@@ -246,7 +246,7 @@ function initAppFeatures() {
 let appFeaturesInitialized = false;
 
 // Initialize app features only once
-function initAppFeaturesOnce() {
+export function initAppFeaturesOnce() {
     if (appFeaturesInitialized) return;
     appFeaturesInitialized = true;
     initAppFeatures();
