@@ -1,11 +1,52 @@
 import { getSavedWordsPaginated, deleteWord, updateWord, exportWords } from './storage.js';
 
-// Pagination state
+// Pagination and filter state
 let currentPage = 1;
+let currentFilter = 'all';
 const PAGE_SIZE = 50;
+
+// Empty state messages for each filter
+const EMPTY_MESSAGES = {
+    all: 'No saved words yet',
+    new: 'No new words. All words have been reviewed!',
+    learning: 'No words in learning phase',
+    mastered: 'No mastered words yet. Keep practicing!',
+    due: 'No words due for review. Great job!'
+};
 
 function escapeAttr(str) {
     return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Get status badge HTML for a word based on spaced repetition data
+function getWordStatusBadge(word) {
+    if (word.reviewCount === 0) {
+        return '<span class="word-badge new">New</span>';
+    }
+
+    const now = new Date();
+    const nextReview = new Date(word.nextReview);
+
+    if (nextReview <= now) {
+        return '<span class="word-badge overdue">Due</span>';
+    }
+
+    if (word.interval >= 30) {
+        return '<span class="word-badge mastered">Mastered</span>';
+    }
+
+    if (word.interval < 10) {
+        return '<span class="word-badge learning">Learning</span>';
+    }
+
+    return '';
+}
+
+// Update filter button active states
+function updateFilterButtons(activeFilter) {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === activeFilter);
+    });
 }
 
 function renderPaginationControls(currentPage, totalPages) {
@@ -53,19 +94,23 @@ function renderPaginationControls(currentPage, totalPages) {
     return pages.join('');
 }
 
-export async function displaySavedWords(page = 1) {
+export async function displaySavedWords(page = 1, filter = currentFilter) {
     const savedWordsList = document.getElementById('savedWordsList');
     const paginationControls = document.getElementById('paginationControls');
+
+    // Update filter state
+    currentFilter = filter;
+    updateFilterButtons(filter);
 
     // Show loading state
     savedWordsList.innerHTML = '<p class="loading">Loading words...</p>';
     paginationControls.innerHTML = '';
 
-    const { words, totalCount, totalPages, currentPage: fetchedPage } = await getSavedWordsPaginated(page, PAGE_SIZE);
+    const { words, totalCount, totalPages, currentPage: fetchedPage } = await getSavedWordsPaginated(page, PAGE_SIZE, filter);
     currentPage = fetchedPage;
 
     if (words.length === 0) {
-        savedWordsList.innerHTML = '<p class="empty-state">No saved words yet</p>';
+        savedWordsList.innerHTML = `<p class="empty-state">${EMPTY_MESSAGES[filter] || EMPTY_MESSAGES.all}</p>`;
         paginationControls.innerHTML = '';
         return;
     }
@@ -74,6 +119,7 @@ export async function displaySavedWords(page = 1) {
         <div class="saved-word-item">
             <div class="saved-word-header">
                 <span class="saved-word-title">${item.word}</span>
+                ${getWordStatusBadge(item)}
                 <div class="saved-word-actions">
                     <button class="edit-btn" data-word="${item.word}" data-definition="${escapeAttr(item.definition)}" data-example="${escapeAttr(item.example || '')}" data-index="${index}">✎</button>
                     <button class="delete-btn" data-word="${item.word}" data-index="${index}">×</button>
@@ -92,7 +138,7 @@ export async function displaySavedWords(page = 1) {
         btn.addEventListener('click', async (e) => {
             const targetPage = parseInt(e.target.getAttribute('data-page'), 10);
             if (!isNaN(targetPage) && targetPage !== currentPage) {
-                await displaySavedWords(targetPage);
+                await displaySavedWords(targetPage, currentFilter);
                 // Scroll to top of the list
                 savedWordsList.scrollTop = 0;
             }
@@ -299,4 +345,16 @@ export function showEditModal(word, definition, example) {
         }
     };
     document.addEventListener('keydown', handleEscape);
+}
+
+// Initialize filter button event listeners
+export function initFilterControls() {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.dataset.filter;
+            if (filter !== currentFilter) {
+                displaySavedWords(1, filter); // Reset to page 1 when changing filter
+            }
+        });
+    });
 }

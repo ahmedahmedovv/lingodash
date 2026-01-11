@@ -1,6 +1,6 @@
 import './css/style.css';
 import { initLookup } from './js/lookup.js';
-import { initTabs, displaySavedWords, showExportMenu } from './js/ui.js';
+import { initTabs, displaySavedWords, showExportMenu, initFilterControls } from './js/ui.js';
 import { initExercise } from './js/exercise.js';
 import { clearAllWords } from './js/storage.js';
 import { signIn, signUp, signOut, onAuthStateChange, getCurrentUser } from './js/auth.js';
@@ -206,13 +206,16 @@ async function initApp() {
 function initAppFeatures() {
     // Initialize tabs
     initTabs();
-    
+
     // Initialize lookup functionality
     initLookup();
-    
+
+    // Initialize filter controls for saved words
+    initFilterControls();
+
     // Display saved words
     displaySavedWords();
-    
+
     // Initialize exercise
     initExercise();
     

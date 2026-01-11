@@ -36,17 +36,37 @@ export async function getSavedWords() {
     }
 }
 
-// Get saved words with pagination
-export async function getSavedWordsPaginated(page = 1, pageSize = 50) {
+// Get saved words with pagination and optional filter
+export async function getSavedWordsPaginated(page = 1, pageSize = 50, filter = 'all') {
     try {
         const userId = await getUserId();
         const offset = (page - 1) * pageSize;
+        const now = new Date().toISOString();
 
-        // Get total count
-        const { count, error: countError } = await supabase
+        // Build base query for count
+        let countQuery = supabase
             .from('words')
             .select('*', { count: 'exact', head: true })
             .eq('user_id', userId);
+
+        // Apply filter conditions to count query
+        switch (filter) {
+            case 'new':
+                countQuery = countQuery.eq('review_count', 0);
+                break;
+            case 'learning':
+                countQuery = countQuery.gt('review_count', 0).lt('interval', 10);
+                break;
+            case 'mastered':
+                countQuery = countQuery.gte('interval', 30);
+                break;
+            case 'due':
+                countQuery = countQuery.lte('next_review', now);
+                break;
+        }
+
+        // Get total count
+        const { count, error: countError } = await countQuery;
 
         if (countError) {
             console.error('Error fetching word count:', countError);
@@ -56,11 +76,30 @@ export async function getSavedWordsPaginated(page = 1, pageSize = 50) {
         const totalCount = count || 0;
         const totalPages = Math.ceil(totalCount / pageSize);
 
-        // Get paginated data
-        const { data, error } = await supabase
+        // Build data query
+        let dataQuery = supabase
             .from('words')
             .select('*')
-            .eq('user_id', userId)
+            .eq('user_id', userId);
+
+        // Apply filter conditions to data query
+        switch (filter) {
+            case 'new':
+                dataQuery = dataQuery.eq('review_count', 0);
+                break;
+            case 'learning':
+                dataQuery = dataQuery.gt('review_count', 0).lt('interval', 10);
+                break;
+            case 'mastered':
+                dataQuery = dataQuery.gte('interval', 30);
+                break;
+            case 'due':
+                dataQuery = dataQuery.lte('next_review', now);
+                break;
+        }
+
+        // Get paginated data
+        const { data, error } = await dataQuery
             .order('timestamp', { ascending: false })
             .range(offset, offset + pageSize - 1);
 
