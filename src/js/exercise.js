@@ -204,7 +204,11 @@ async function startExercise() {
     document.getElementById('exerciseContent').style.display = 'none';
     document.getElementById('exerciseQuiz').style.display = 'block';
     document.getElementById('exerciseResults').style.display = 'none';
-    
+
+    // Show and initialize progress counter
+    updateProgressCounter();
+    document.getElementById('exerciseProgress').style.display = 'block';
+
     updateExerciseProgress();
     showQuestion();
 }
@@ -321,6 +325,9 @@ function showQuestion() {
 
     // Keep word stats hidden (minimalist approach)
     // document.getElementById('wordStats').classList.remove('visible');
+
+    // Update progress counter for current question
+    updateProgressCounter();
 }
 
 function displayWordDueInfo(word) {
@@ -631,10 +638,31 @@ function createSparkles() {
 
 
 
+// Update progress counter display
+function updateProgressCounter() {
+    const currentQuestionNum = document.getElementById('currentQuestionNum');
+    const totalQuestions = document.getElementById('totalQuestions');
+    const remainingQuestions = document.getElementById('remainingQuestions');
+
+    if (currentQuestionNum && totalQuestions && remainingQuestions) {
+        const current = Math.min(currentQuestionIndex + 1, exerciseWords.length);
+        const total = exerciseWords.length;
+        const remaining = Math.max(0, total - current);
+
+        currentQuestionNum.textContent = current;
+        totalQuestions.textContent = total;
+        remainingQuestions.textContent = remaining;
+    }
+}
+
 function resetExercise() {
     document.getElementById('exerciseContent').style.display = 'block';
     document.getElementById('exerciseQuiz').style.display = 'none';
     document.getElementById('exerciseResults').style.display = 'none';
+
+    // Hide progress counter
+    document.getElementById('exerciseProgress').style.display = 'none';
+
     correctAnswers = 0;
     currentQuestionIndex = 0;
     masteredWords.clear();

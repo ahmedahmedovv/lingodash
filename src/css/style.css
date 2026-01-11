@@ -632,6 +632,18 @@ input[type="text"]::placeholder {
     justify-content: space-between;
 }
 
+.exercise-progress {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #8B7355;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem;
+    background: #F5F1E8;
+    border-radius: 6px;
+    border: 1px solid #D4C5B0;
+}
+
 .question-card-minimal {
     max-width: 900px;
     margin: 0 auto;
