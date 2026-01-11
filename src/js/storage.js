@@ -10,7 +10,7 @@ export async function getSavedWords() {
             .select('*')
             .eq('user_id', userId)
             .order('timestamp', { ascending: false })
-            .limit(50);
+            .limit(99999);
         
         if (error) {
             console.error('Error fetching words:', error);
@@ -129,7 +129,7 @@ export async function saveWord(word, definition, example = '') {
                 throw insertError;
             }
             
-            // Clean up old words if we have more than 50
+            // Clean up old words if we have more than 99999
             await cleanupOldWords(userId);
         }
         
@@ -140,7 +140,7 @@ export async function saveWord(word, definition, example = '') {
     }
 }
 
-// Helper function to keep only the last 50 words
+// Helper function to keep only the last 99999 words
 async function cleanupOldWords(userId) {
     try {
         const { data: allWords, error: fetchError } = await supabase
@@ -148,13 +148,13 @@ async function cleanupOldWords(userId) {
             .select('id, timestamp')
             .eq('user_id', userId)
             .order('timestamp', { ascending: false });
-        
-        if (fetchError || !allWords || allWords.length <= 50) {
+
+        if (fetchError || !allWords || allWords.length <= 99999) {
             return;
         }
-        
-        // Delete words beyond the 50th
-        const wordsToDelete = allWords.slice(50).map(w => w.id);
+
+        // Delete words beyond the 99999th
+        const wordsToDelete = allWords.slice(99999).map(w => w.id);
         
         if (wordsToDelete.length > 0) {
             const { error: deleteError } = await supabase
