@@ -455,9 +455,9 @@ async function checkAnswer() {
         updateExerciseProgress();
     } else {
         // Word answered incorrectly - add it back to the queue
-        // Insert it 2-3 positions ahead (or at the end if near the end)
+        // Insert it 2-8 positions ahead (or at the end if near the end)
         const insertPosition = Math.min(
-            currentQuestionIndex + Math.floor(Math.random() * 2) + 2,
+            currentQuestionIndex + Math.floor(Math.random() * 7) + 2,
             exerciseWords.length
         );
 
