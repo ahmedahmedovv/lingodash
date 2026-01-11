@@ -629,6 +629,8 @@ function createSparkles() {
     }, 1000);
 }
 
+
+
 function resetExercise() {
     document.getElementById('exerciseContent').style.display = 'block';
     document.getElementById('exerciseQuiz').style.display = 'none';

@@ -1,4 +1,5 @@
 import { getSavedWordsPaginated, deleteWord, updateWord, exportWords } from './storage.js';
+import { regenerateWordExample } from './api.js';
 
 // Pagination and filter state
 let currentPage = 1;
@@ -257,7 +258,10 @@ export function showEditModal(word, definition, example) {
                 </div>
                 <div class="edit-field">
                     <label for="edit-example">Example</label>
-                    <textarea id="edit-example" rows="2">${example}</textarea>
+                    <div class="example-field-group">
+                        <textarea id="edit-example" rows="2">${example}</textarea>
+                        <button class="edit-regenerate-btn" type="button">🔄 Regenerate Example</button>
+                    </div>
                 </div>
             </div>
             <div class="edit-error" style="display: none;"></div>
@@ -323,6 +327,12 @@ export function showEditModal(word, definition, example) {
         }
     });
 
+    // Add event listener for regenerate button
+    const regenerateBtn = editOverlay.querySelector('.edit-regenerate-btn');
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', regenerateExample);
+    }
+
     // Cancel handler
     const closeModal = () => {
         document.body.removeChild(editOverlay);
@@ -345,6 +355,98 @@ export function showEditModal(word, definition, example) {
         }
     };
     document.addEventListener('keydown', handleEscape);
+}
+
+// Regenerate example functionality for edit modal
+async function regenerateExample() {
+    // Find the example input in the currently open edit modal
+    const exampleInput = document.getElementById('edit-example');
+    const regenerateBtn = document.querySelector('.edit-regenerate-btn');
+    const wordInput = document.getElementById('edit-word');
+
+    if (!exampleInput || !regenerateBtn || !wordInput) {
+        console.log('❌ Regenerate Example: Required elements not found');
+        return;
+    }
+
+    const currentWord = wordInput.value.trim();
+    if (!currentWord) {
+        console.log('❌ Regenerate Example: No word specified');
+        return;
+    }
+
+    console.log('🔄 Regenerate Example: Starting for word:', currentWord);
+
+    regenerateBtn.textContent = '🔄 Generating...';
+    regenerateBtn.disabled = true;
+
+    try {
+        // Call AI to generate new example (may take multiple attempts)
+        let attempts = 0;
+        const maxAttempts = 3;
+        let newExample = null;
+
+        while (attempts < maxAttempts && !newExample) {
+            attempts++;
+            console.log('🔄 Regenerate Example: Making API call, attempt:', attempts);
+
+            const result = await regenerateWordExample(currentWord);
+            console.log('🔄 Regenerate Example: API response:', result);
+
+            // Validate that the word appears in the example
+            console.log('🔄 Regenerate Example: Checking if word appears in example...');
+            if (result.example && containsWord(result.example, currentWord)) {
+                newExample = result.example;
+                console.log('✅ Regenerate Example: Valid example found:', newExample);
+            } else if (attempts === maxAttempts) {
+                console.error('❌ Regenerate Example: Failed after max attempts - could not generate valid example');
+                throw new Error('Could not generate valid example containing the word');
+            } else {
+                console.log('⏳ Regenerate Example: Word not found in example, retrying in 1 second...');
+            }
+
+            // Rate limiting between attempts
+            if (!newExample && attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        }
+
+        // Update the example input with the new example (live preview)
+        console.log('🔄 Regenerate Example: Updating example input with new example');
+        exampleInput.value = newExample;
+
+        // Success feedback
+        regenerateBtn.textContent = '✅ Regenerated!';
+        setTimeout(() => {
+            regenerateBtn.textContent = '🔄 Regenerate Example';
+            regenerateBtn.disabled = false;
+        }, 2000);
+
+    } catch (error) {
+        console.error('❌ Regenerate Example: Final error:', error.message);
+        regenerateBtn.textContent = '❌ Failed';
+        setTimeout(() => {
+            regenerateBtn.textContent = '🔄 Regenerate Example';
+            regenerateBtn.disabled = false;
+        }, 2000);
+    }
+}
+
+// Helper function to check if word appears in example
+function containsWord(example, targetWord) {
+    console.log('🔍 Word Validation: Checking if', targetWord, 'appears in:', example);
+
+    if (!example || !targetWord) {
+        console.log('🔍 Word Validation: Missing parameters');
+        return false;
+    }
+
+    // Case-insensitive check for the word (word boundaries to avoid partial matches)
+    const regex = new RegExp(`\\b${targetWord}\\b`, 'i');
+    const result = regex.test(example);
+    console.log('🔍 Word Validation: Regex test result:', result);
+
+    return result;
 }
 
 // Initialize filter button event listeners
