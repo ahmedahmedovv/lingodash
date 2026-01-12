@@ -615,8 +615,8 @@ async function refreshCurrentWord() {
 }
 
 function createSparkles() {
-    const answerSection = document.querySelector('.answer-section');
-    if (!answerSection) return;
+    const exampleSentence = document.querySelector('.example-sentence');
+    if (!exampleSentence) return;
 
     // Remove any existing sparkle container
     const existingSparkles = document.querySelector('.sparkle-container');
@@ -635,7 +635,7 @@ function createSparkles() {
         sparkleContainer.appendChild(sparkle);
     }
 
-    answerSection.appendChild(sparkleContainer);
+    exampleSentence.appendChild(sparkleContainer);
 
     // Remove sparkles after animation completes
     setTimeout(() => {
