@@ -1,5 +1,6 @@
 import { getSavedWordsPaginated, deleteWord, updateWord, exportWords } from './storage.js';
 import { regenerateWordExample } from './api.js';
+import { initStatsPage } from './stats.js';
 
 // Pagination and filter state
 let currentPage = 1;
@@ -188,9 +189,11 @@ export function initTabs() {
             button.classList.add('active');
             document.getElementById(`${targetTab}-panel`).classList.add('active');
             
-            // Update saved words list when switching to saved words tab
+            // Update content when switching to specific tabs
             if (targetTab === 'saved') {
                 displaySavedWords();
+            } else if (targetTab === 'stats') {
+                initStatsPage();
             }
         });
     });

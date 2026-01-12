@@ -1,4 +1,4 @@
-import { getSavedWords, getWordsDueForReview, updateWordReview, deleteWord, updateWord } from './storage.js';
+import { getSavedWords, getWordsDueForReview, updateWordReviewFSRS, deleteWord, updateWord } from './storage.js';
 import { showEditModal, displaySavedWords } from './ui.js';
 
 let exerciseWords = [];
@@ -6,6 +6,7 @@ let currentQuestionIndex = 0;
 let correctAnswers = 0;
 let masteredWords = new Set(); // Track words answered correctly in this session
 let totalAttempts = 0; // Track total questions answered
+let questionStartTime = null; // Track when the current question was shown
 
 // Exercise data cache for instant loading
 let exerciseDataCache = null;
@@ -275,6 +276,9 @@ function showQuestion() {
 
     const currentWord = exerciseWords[currentQuestionIndex];
 
+    // Record when the question was shown (for FSRS response time tracking)
+    questionStartTime = Date.now();
+
     // Trigger slide-in animation
     const questionCard = document.querySelector('.question-card-minimal');
     questionCard.classList.remove('slide-in');
@@ -424,8 +428,11 @@ async function checkAnswer() {
     // Show edit/delete buttons after answer is submitted
     document.getElementById('exerciseCardActions').style.display = 'flex';
 
-    // Update spaced repetition data (non-blocking - runs in background)
-    updateWordReview(currentWord.word, isCorrect);
+    // Calculate response time for FSRS rating determination
+    const responseTime = questionStartTime ? Date.now() - questionStartTime : 3000; // Default 3 seconds if not tracked
+
+    // Update spaced repetition data with FSRS (non-blocking - runs in background)
+    updateWordReviewFSRS(currentWord.word, isCorrect, responseTime);
     
     // Don't show word statistics - keeping UI minimal
     // displayWordStats(currentWord);

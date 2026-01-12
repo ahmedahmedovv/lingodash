@@ -82,6 +82,10 @@
                         <span class="tab-icon">💪</span>
                         <span class="tab-text">Exercise</span>
                     </button>
+                    <button class="tab-btn" data-tab="stats">
+                        <span class="tab-icon">📊</span>
+                        <span class="tab-text">Stats</span>
+                    </button>
                 </div>
                 
                 <div class="tab-content">
@@ -181,6 +185,123 @@
                                 <h3>Exercise Complete! 🎉</h3>
                                 <p class="final-score">Your Score: <span id="finalScore"></span></p>
                                 <button id="restartExercise" class="start-btn">Try Again</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Tab -->
+                    <div class="tab-panel" id="stats-panel">
+                        <div class="stats-section">
+                            <div class="stats-header">
+                                <h2>Learning Analytics</h2>
+                                <p class="stats-subtitle">Track your vocabulary learning progress with FSRS insights</p>
+                                <button id="refreshStats" class="refresh-stats-btn">🔄 Refresh</button>
+                            </div>
+
+                            <!-- Overview Cards -->
+                            <div class="stats-overview">
+                                <div class="stat-card">
+                                    <div class="stat-icon">📚</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="totalWords">--</div>
+                                        <div class="stat-label">Total Words</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">🎯</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="wordsDue">--</div>
+                                        <div class="stat-label">Due for Review</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">🧠</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="avgStability">--</div>
+                                        <div class="stat-label">Avg Stability</div>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">📈</div>
+                                    <div class="stat-content">
+                                        <div class="stat-value" id="totalReviews">--</div>
+                                        <div class="stat-label">Total Reviews</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Charts Section -->
+                            <div class="stats-charts">
+                                <!-- Learning Progress Chart -->
+                                <div class="chart-container">
+                                    <h3>Learning Progress</h3>
+                                    <div class="progress-chart" id="learningProgressChart">
+                                        <div class="chart-placeholder">Loading learning progress...</div>
+                                    </div>
+                                </div>
+
+                                <!-- Stability Distribution -->
+                                <div class="chart-container">
+                                    <h3>Memory Stability</h3>
+                                    <div class="stability-chart" id="stabilityChart">
+                                        <div class="chart-placeholder">Loading stability data...</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Detailed Stats -->
+                            <div class="stats-details">
+                                <div class="detail-section">
+                                    <h3>Word Status Breakdown</h3>
+                                    <div class="status-breakdown" id="wordStatusBreakdown">
+                                        <div class="status-item">
+                                            <span class="status-label">New Words:</span>
+                                            <span class="status-value" id="newWordsCount">--</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span class="status-label">Learning:</span>
+                                            <span class="status-value" id="learningWordsCount">--</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span class="status-label">Mastered:</span>
+                                            <span class="status-value" id="masteredWordsCount">--</span>
+                                        </div>
+                                        <div class="status-item">
+                                            <span class="status-label">Overdue:</span>
+                                            <span class="status-value" id="overdueWordsCount">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-section">
+                                    <h3>FSRS Performance</h3>
+                                    <div class="fsrs-metrics" id="fsrsMetrics">
+                                        <div class="metric-item">
+                                            <span class="metric-label">Average Difficulty:</span>
+                                            <span class="metric-value" id="avgDifficulty">--</span>
+                                        </div>
+                                        <div class="metric-item">
+                                            <span class="metric-label">Retention Rate:</span>
+                                            <span class="metric-value" id="retentionRate">--%</span>
+                                        </div>
+                                        <div class="metric-item">
+                                            <span class="metric-label">Total Lapses:</span>
+                                            <span class="metric-value" id="totalLapses">--</span>
+                                        </div>
+                                        <div class="metric-item">
+                                            <span class="metric-label">Accuracy Rate:</span>
+                                            <span class="metric-value" id="accuracyRate">--%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Activity -->
+                            <div class="recent-activity">
+                                <h3>Recent Learning Activity</h3>
+                                <div id="recentActivity" class="activity-list">
+                                    <div class="activity-placeholder">No recent activity</div>
+                                </div>
                             </div>
                         </div>
                     </div>
