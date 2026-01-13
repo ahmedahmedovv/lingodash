@@ -11,7 +11,7 @@ vi.mock('./supabase.js', () => ({
     getUserId: vi.fn(() => Promise.resolve('test-user-id'))
 }));
 
-import { getSavedWords, saveWord, deleteWord } from './storage.js';
+import { getSavedWords, saveWord, deleteWord } from './storage/index.js';
 import { supabase } from './supabase.js';
 
 describe('Storage Performance Tests', () => {

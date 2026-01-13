@@ -1,6 +1,6 @@
 import { getWordDefinition, getBatchWordDefinitions } from './api.js';
-import { saveWord } from './storage.js';
-import { displaySavedWords, validateWordExample } from './ui.js';
+import { saveWord } from './storage/index.js';
+import { displaySavedWords, validateWordExample } from './ui/index.js';
 
 const definitionBox = document.getElementById('definitionBox');
 const definitionContent = document.getElementById('definitionContent');

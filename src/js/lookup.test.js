@@ -6,18 +6,18 @@ vi.mock('./api.js', () => ({
     getBatchWordDefinitions: vi.fn()
 }));
 
-vi.mock('./storage.js', () => ({
+vi.mock('./storage/index.js', () => ({
     saveWord: vi.fn()
 }));
 
-vi.mock('./ui.js', () => ({
+vi.mock('./ui/index.js', () => ({
     displaySavedWords: vi.fn()
 }));
 
 import { initLookup } from './lookup.js';
 import { getWordDefinition, getBatchWordDefinitions } from './api.js';
-import { saveWord } from './storage.js';
-import { displaySavedWords } from './ui.js';
+import { saveWord } from './storage/index.js';
+import { displaySavedWords } from './ui/index.js';
 
 describe('Word Lookup Functionality', () => {
     beforeEach(() => {

@@ -2,11 +2,11 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getWordDefinition } from './api.js';
 
 // Mock storage module before importing api
-vi.mock('./storage.js', () => ({
+vi.mock('./storage/index.js', () => ({
     getWordIfExists: vi.fn()
 }));
 
-import { getWordIfExists } from './storage.js';
+import { getWordIfExists } from './storage/index.js';
 
 describe('API Functions', () => {
     beforeEach(() => {

@@ -1,5 +1,5 @@
 import { MISTRAL_API_KEY, MISTRAL_API_URL } from './config.js';
-import { getWordIfExists } from './storage.js';
+import { getWordIfExists } from './storage/index.js';
 
 // Rate limiting configuration
 const RATE_LIMIT_DELAY = 1000; // 1 second between requests

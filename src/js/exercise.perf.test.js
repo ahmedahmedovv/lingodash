@@ -1,13 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock storage module
-vi.mock('./storage.js', () => ({
+vi.mock('./storage/index.js', () => ({
     getSavedWords: vi.fn(),
     getWordsDueForReview: vi.fn(),
     updateWordReview: vi.fn()
 }));
 
-import * as storage from './storage.js';
+import * as storage from './storage/index.js';
 
 describe('Exercise Performance Tests', () => {
     beforeEach(() => {

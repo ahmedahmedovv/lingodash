@@ -1,22 +1,22 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock all dependencies for integration testing
-vi.mock('./storage.js', () => ({
+vi.mock('./storage/index.js', () => ({
     getSavedWords: vi.fn(),
     getWordsDueForReview: vi.fn(),
     updateWordReview: vi.fn()
 }));
 
-vi.mock('./exercise.js', () => ({
+vi.mock('./exercise/index.js', () => ({
     initExercise: vi.fn(),
     startExercise: vi.fn(),
     checkAnswer: vi.fn(),
     nextQuestion: vi.fn()
 }));
 
-import { initExercise, startExercise, checkAnswer, nextQuestion } from './exercise.js';
+import { initExercise, startExercise, checkAnswer, nextQuestion } from './exercise/index.js';
 
-import { getSavedWords, getWordsDueForReview, updateWordReview } from './storage.js';
+import { getSavedWords, getWordsDueForReview, updateWordReview } from './storage/index.js';
 
 describe('Exercise Integration Tests', () => {
     beforeEach(() => {

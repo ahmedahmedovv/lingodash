@@ -1,18 +1,18 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock all modules for performance testing
-vi.mock('./storage.js', () => ({
+vi.mock('./storage/index.js', () => ({
     getSavedWords: vi.fn(),
     getWordsDueForReview: vi.fn(),
     getSavedWordsPaginated: vi.fn()
 }));
 
-vi.mock('./exercise.js', () => ({
+vi.mock('./exercise/index.js', () => ({
     startExercise: vi.fn()
 }));
 
-import { getSavedWords, getWordsDueForReview, getSavedWordsPaginated } from './storage.js';
-import { startExercise } from './exercise.js';
+import { getSavedWords, getWordsDueForReview, getSavedWordsPaginated } from './storage/index.js';
+import { startExercise } from './exercise/index.js';
 
 describe('Performance Tests', () => {
     beforeEach(() => {

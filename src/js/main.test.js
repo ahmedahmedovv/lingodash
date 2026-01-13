@@ -10,27 +10,27 @@ vi.mock('./lookup.js', () => ({
   initLookup: vi.fn()
 }));
 
-vi.mock('./ui.js', () => ({
+vi.mock('./ui/index.js', () => ({
   initTabs: vi.fn(),
   displaySavedWords: vi.fn(),
   initFilterControls: vi.fn()
 }));
 
-vi.mock('./exercise.js', () => ({
+vi.mock('./exercise/index.js', () => ({
   initExercise: vi.fn(),
   prefetchExerciseData: vi.fn()
 }));
 
-vi.mock('./storage.js', () => ({
+vi.mock('./storage/index.js', () => ({
   clearAllWords: vi.fn()
 }));
 
 import { initApp, initAppFeaturesOnce } from '../main.js';
 import { getCurrentUser, onAuthStateChange } from './auth.js';
 import { initLookup } from './lookup.js';
-import { initTabs, displaySavedWords, initFilterControls } from './ui.js';
-import { initExercise, prefetchExerciseData } from './exercise.js';
-import { clearAllWords } from './storage.js';
+import { initTabs, displaySavedWords, initFilterControls } from './ui/index.js';
+import { initExercise, prefetchExerciseData } from './exercise/index.js';
+import { clearAllWords } from './storage/index.js';
 
 describe('Main App Initialization', () => {
   beforeEach(() => {

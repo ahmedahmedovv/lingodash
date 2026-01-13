@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // Mock storage module before importing ui
-vi.mock('./storage.js', () => ({
+vi.mock('./storage/index.js', () => ({
     getSavedWordsPaginated: vi.fn(),
     deleteWord: vi.fn(),
     updateWord: vi.fn(),
     exportWords: vi.fn()
 }));
 
-import { displaySavedWords } from './ui.js';
-import * as storage from './storage.js';
+import { displaySavedWords } from './ui/index.js';
+import * as storage from './storage/index.js';
 
 describe('UI Performance Tests', () => {
     beforeEach(() => {
