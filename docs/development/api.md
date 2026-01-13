@@ -27,12 +27,13 @@ src/js/
 
 Handles all external API communications, primarily with Mistral AI.
 
-### `getWordDefinition(word)`
+### `getWordDefinition(word, retryCount = 0)`
 
-Looks up a single word definition using Mistral AI.
+Looks up a single word definition using Mistral AI with advanced prompt engineering.
 
 **Parameters:**
 - `word` (string): The word to look up
+- `retryCount` (number, optional): Number of retries attempted (internal use)
 
 **Returns:** Promise resolving to object:
 ```javascript
@@ -41,6 +42,7 @@ Looks up a single word definition using Mistral AI.
   definition: string,     // AI-generated definition
   example: string,        // Example sentence
   fromSupabase: boolean,  // Whether cached from database
+  potentiallyInvalid?: boolean, // Whether example validation failed after retries
   success: boolean        // Operation success status
 }
 ```
@@ -48,8 +50,37 @@ Looks up a single word definition using Mistral AI.
 **Behavior:**
 - First checks Supabase cache for existing word
 - Falls back to Mistral AI if not cached
+- Uses advanced prompt engineering to ensure examples contain the exact word
+- Implements validation to check if generated examples actually contain the target word
+- Automatic retries (up to 3 attempts) if example validation fails
 - Implements rate limiting (1 second between AI calls)
-- Handles API errors with retry logic
+- Handles API errors with exponential backoff retry logic
+
+### `regenerateWordExample(word, retryCount = 0)`
+
+Regenerates a new example sentence for an existing word using advanced AI prompt engineering.
+
+**Parameters:**
+- `word` (string): The word to regenerate an example for
+- `retryCount` (number, optional): Number of retries attempted (internal use)
+
+**Returns:** Promise resolving to object (same format as getWordDefinition):
+```javascript
+{
+  word: string,           // Original word
+  definition: string,     // AI-generated definition
+  example: string,        // New example sentence
+  fromSupabase: boolean,  // Always false for regeneration
+  potentiallyInvalid?: boolean, // Whether example validation failed after retries
+  success: boolean        // Operation success status
+}
+```
+
+**Behavior:**
+- Uses specialized regeneration prompts to create fresh examples
+- Implements the same validation and retry logic as word lookup
+- Ensures the new example contains the exact target word
+- Designed for improving or refreshing existing word examples
 
 ### `getBatchWordDefinitions(words, progressCallback, autoSaveCallback)`
 
@@ -59,7 +90,7 @@ Processes multiple words in batch with progress tracking.
 - `words` (string[]): Array of words to process
 - `progressCallback` (function): Called for each word processed
   - Parameters: `(currentIndex, totalCount, currentWord, status)`
-  - Status: `'checking'`, `'fetching'`, `'saving'`, `'error'`
+  - Status: `'checking'`, `'reusing'`, `'fetching'`, `'error'`
 - `autoSaveCallback` (function): Called to auto-save successful lookups
   - Parameter: `wordData` object (same format as getWordDefinition)
 
@@ -70,6 +101,7 @@ Processes multiple words in batch with progress tracking.
 - Progress callbacks for UI updates
 - Automatic saving of successful lookups
 - Per-word error handling
+- Smart caching: reuses existing words from database when available
 
 ## Storage Module (`storage.js`)
 
@@ -344,16 +376,17 @@ Signs out current user.
 
 ## Configuration Module (`config.js`)
 
-API keys and application constants.
+API keys and application constants. **⚠️ Security Note**: API keys should be loaded from environment variables, not hardcoded.
 
 ```javascript
-export const MISTRAL_API_KEY = 'your-key-here';
-export const API_BASE_URL = 'https://api.mistral.ai/v1';
-export const MODEL_NAME = 'mistral-large-latest';
+// Load from environment variables (recommended)
+export const MISTRAL_API_KEY = import.meta.env.VITE_MISTRAL_API_KEY || 'your-key-here-for-dev';
+export const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 
 // Rate limiting
-export const RATE_LIMIT_DELAY = 1000; // ms between AI calls
+export const RATE_LIMIT_DELAY = 1000; // 1 second between AI calls
 export const MAX_RETRIES = 3;
+export const RETRY_DELAY = 2000; // Initial retry delay
 
 // Exercise settings
 export const MIN_WORDS_FOR_EXERCISE = 3;
@@ -363,6 +396,14 @@ export const EXERCISE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 // Pagination
 export const WORDS_PER_PAGE = 50;
 ```
+
+**Environment Variables Setup:**
+```bash
+# .env file (create in project root)
+VITE_MISTRAL_API_KEY=your-actual-api-key-here
+```
+
+**⚠️ Never commit .env files to version control!**
 
 ## Supabase Module (`supabase.js`)
 

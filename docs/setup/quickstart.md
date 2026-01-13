@@ -36,12 +36,20 @@ See [Database Setup](database.md) for detailed instructions.
 ## 3. Configure API Keys
 
 1. Get a [Mistral AI API key](https://mistral.ai/)
-2. Open `src/js/config.js`
-3. Replace the placeholder with your actual API key:
+2. Create a `.env` file in the project root:
 
-```javascript
-export const MISTRAL_API_KEY = 'your-actual-api-key-here';
+```bash
+# Create .env file
+touch .env
 ```
+
+3. Add your API key to the `.env` file:
+
+```env
+VITE_MISTRAL_API_KEY=your-actual-api-key-here
+```
+
+**⚠️ Security Note**: Never commit the `.env` file to version control. It should already be in `.gitignore`.
 
 ## 4. Start Development Server
 
@@ -74,6 +82,24 @@ The app will open at `http://localhost:5173`
 - Clear node_modules: `rm -rf node_modules && npm install`
 - Check Node.js version: `node --version`
 - Update npm: `npm update -g npm`
+
+### Environment Variable Issues
+- Ensure `.env` file is in the project root directory
+- Verify variable names start with `VITE_` for Vite to expose them
+- Restart the dev server after adding/changing `.env` files
+- Check browser console for "undefined" errors if variables aren't loading
+
+### API Key Issues
+- Verify your Mistral API key is active and has credits
+- Check that the key is properly set in `.env` without extra spaces
+- Test the key directly with Mistral's API if possible
+- Ensure you're using the correct API endpoint format
+
+### Database Connection Issues
+- Confirm Supabase project is active (not paused)
+- Verify the project URL and anon key are correct
+- Check that you've run the SQL schema in Supabase
+- Ensure Row Level Security policies are properly configured
 
 ## Next Steps
 

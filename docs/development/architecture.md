@@ -22,9 +22,11 @@ A vocabulary learning tool that helps users:
    - User data isolation
 
 2. **Word Lookup** (Single & Batch)
-   - Real-time AI-powered definitions
-   - Example sentences
-   - Rate-limited API calls with retry logic
+   - Real-time AI-powered definitions with advanced prompt engineering
+   - Example sentence validation to ensure accuracy
+   - Automatic retries with improved prompts if validation fails
+   - Batch processing with smart caching (reuses existing database entries)
+   - Rate-limited API calls with retry logic and exponential backoff
 
 3. **Cloud Storage** (Supabase)
    - Persistent word storage

@@ -64,12 +64,24 @@ If you prefer to create your own Supabase project:
    - **Project URL**
    - **anon/public key**
 
-3. Update `src/js/supabase.js` with your values:
+3. Create or update your `.env` file in the project root:
+
+```env
+# Supabase Configuration
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+4. Update `src/js/supabase.js` to use environment variables:
 
 ```javascript
-const SUPABASE_URL = 'https://your-project-ref.supabase.co';
-const SUPABASE_ANON_KEY = 'your-anon-key-here';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 ```
+
+**⚠️ Security Note**: Never commit `.env` files to version control. They should already be in `.gitignore`.
 
 ## Database Schema Details
 
