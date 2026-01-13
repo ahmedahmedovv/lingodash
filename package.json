@@ -1,7 +1,7 @@
 {
   "name": "lingodash",
   "version": "1.0.0",
-  "description": "AI-powered word definition lookup using Google Gemini",
+  "description": "AI-powered vocabulary learning application using Mistral AI",
   "type": "module",
   "scripts": {
     "dev": "vite",

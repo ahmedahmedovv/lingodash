@@ -16,23 +16,33 @@ A vocabulary learning tool that helps users:
 - Learn using scientifically-proven spaced repetition
 
 ### Core Features
-1. **Word Lookup** (Single & Batch)
+1. **User Authentication** (Supabase Auth)
+   - Secure sign up and sign in
+   - Session management
+   - User data isolation
+
+2. **Word Lookup** (Single & Batch)
    - Real-time AI-powered definitions
    - Example sentences
    - Rate-limited API calls with retry logic
 
-2. **Cloud Storage** (Supabase)
+3. **Cloud Storage** (Supabase)
    - Persistent word storage
    - Multi-device synchronization
-   - User isolation via user_id
+   - User isolation via authenticated user_id
 
-3. **Exercise Mode**
+4. **Exercise Mode**
    - Type-to-learn interface
    - Spaced repetition scheduling
    - Persistent learning (words reappear until mastered)
    - Visual due date badges
 
-4. **Export Functionality**
+5. **Learning Analytics**
+   - Progress tracking and statistics
+   - FSRS performance metrics
+   - Learning activity timeline
+
+6. **Export Functionality**
    - JSON export (full data)
    - CSV export (spreadsheet format)
 
@@ -44,17 +54,50 @@ A vocabulary learning tool that helps users:
 ```
 lingodash/
 ├── src/
-│   ├── main.js              # Entry point - orchestrates modules
-│   ├── css/style.css        # Styling (1000+ lines)
+│   ├── main.js              # App entry point & initialization
+│   ├── css/style.css        # Application styles (1000+ lines)
 │   └── js/
 │       ├── api.js           # Mistral AI integration
+│       ├── auth.js          # Supabase authentication functions
+│       ├── authUI.js        # Authentication UI components
 │       ├── config.js        # API configuration
+│       ├── fsrs.js          # Spaced repetition algorithm (FSRS)
+│       ├── lookup.js        # Word lookup functionality
 │       ├── supabase.js      # Supabase client setup
-│       ├── storage.js       # CRUD operations (352 lines)
-│       ├── lookup.js        # Word lookup UI logic
-│       ├── exercise.js      # Exercise/spaced repetition
-│       └── ui.js            # Tab management, display logic
-├── index.html               # Single-page app structure
+│       ├── algorithms/      # Algorithm implementations
+│       ├── core/            # Core application logic
+│       ├── exercise/        # Exercise system (quiz, session, progress)
+│       │   ├── index.js     # Exercise module entry point
+│       │   ├── quiz.js      # Quiz interface and logic
+│       │   ├── session.js   # Exercise session management
+│       │   └── progress.js  # Learning progress tracking
+│       ├── features/        # Feature modules
+│       │   ├── auth/        # Authentication features
+│       │   ├── exercise/    # Exercise features
+│       │   ├── lookup/      # Lookup features
+│       │   ├── savedWords/  # Saved words features
+│       │   ├── stats/       # Statistics and analytics
+│       │   └── words/       # Word management features
+│       ├── modules/         # Modular components
+│       ├── stats/           # Statistics calculations and display
+│       │   ├── index.js     # Stats module entry
+│       │   ├── calculations.js # Analytics calculations
+│       │   └── display.js   # Stats UI components
+│       ├── storage/         # Data persistence layer
+│       │   ├── index.js     # Storage module entry
+│       │   ├── crud.js      # Create, read, update, delete operations
+│       │   ├── export.js    # Data export functionality
+│       │   ├── fsrs.js      # FSRS data operations
+│       │   ├── pagination.js # Data pagination
+│       │   └── review.js    # Review scheduling logic
+│       ├── ui/              # UI components and interactions
+│       │   ├── index.js     # UI module entry
+│       │   ├── modals.js    # Modal dialogs
+│       │   ├── savedWords.js # Saved words UI
+│       │   ├── tabs.js      # Tab navigation
+│       │   └── validation.js # Input validation
+│       └── utils/           # Utility functions
+├── index.html               # Single-page app with 4-tab interface
 ├── vite.config.js           # Build configuration
 └── tests/                   # Comprehensive test suite
 ```
@@ -214,7 +257,7 @@ RETRY_DELAY = 2000ms       // Initial retry delay
 ## 7. User Interface
 
 ### Layout
-- **Three-tab interface**: Lookup | Saved Words | Exercise
+- **Four-tab interface**: Lookup | Saved Words | Exercise | Stats
 - **Responsive design**: Flexbox layout
 - **Minimalist aesthetic**: Clean, distraction-free
 

@@ -2,6 +2,40 @@
 
 Complete guide to all LingoDash features and how to use them effectively.
 
+## 🔐 User Authentication
+
+Secure user accounts with Supabase authentication for personalized learning experiences.
+
+### Creating an Account
+
+1. **Visit the app** - LingoDash requires authentication to access features
+2. **Click "Sign Up"** - Switch to the signup tab on the authentication screen
+3. **Enter credentials**:
+   - Valid email address
+   - Password (minimum 6 characters)
+4. **Verify email** - Check your email for verification (if required by Supabase)
+5. **Sign in** - Use your credentials to access the app
+
+### Signing In
+
+1. **Click "Sign In"** - Use the default authentication tab
+2. **Enter credentials** - Email and password
+3. **Access granted** - Full app features become available
+
+### Account Security
+
+- **Secure authentication** via Supabase Auth
+- **Session management** - Automatic session handling
+- **Data isolation** - Each user sees only their own vocabulary
+- **Logout** - Securely end your session anytime
+
+### Benefits of Authentication
+
+- **Personalized learning** - Your vocabulary collection is private
+- **Cross-device sync** - Access your words from any device
+- **Progress tracking** - Learning statistics tied to your account
+- **Data persistence** - Your learning data is safely stored in the cloud
+
 ## 🔍 Word Lookup
 
 The foundation of LingoDash - look up words and get AI-powered definitions.
@@ -196,14 +230,61 @@ Your vocabulary persists across devices and sessions.
 
 ## 📊 Statistics & Progress
 
-Track your learning journey (future feature - see [ideas.md](../ideas.md)).
+Track your learning journey with comprehensive analytics and progress visualization.
 
-### Planned Features
+### Overview Dashboard
 
-- **Learning streaks**: Consecutive practice days
-- **Retention curves**: Memory performance over time
-- **Heat maps**: Study activity visualization
-- **Progress charts**: Vocabulary growth tracking
+**Access statistics**: Switch to the 📊 Stats tab to view your learning analytics
+
+**Overview Cards**:
+- **Total Words**: Complete vocabulary count
+- **Words Due**: Words ready for review today
+- **Avg Stability**: Memory retention metric (FSRS)
+- **Total Reviews**: Cumulative review sessions
+
+### Learning Progress Chart
+
+**Progress visualization**: Interactive chart showing vocabulary growth over time
+- **X-axis**: Time periods (days/weeks)
+- **Y-axis**: Number of words learned
+- **Data points**: New words added per period
+
+### Memory Stability Chart
+
+**Retention analysis**: Distribution of memory stability across your vocabulary
+- **Stability scores**: How well words are retained (FSRS algorithm)
+- **Color coding**: Different stability ranges
+- **Performance insights**: Areas needing more practice
+
+### Word Status Breakdown
+
+**Vocabulary composition**:
+- **New Words**: Never reviewed (0 reviews)
+- **Learning**: Actively being learned (1-9 reviews)
+- **Mastered**: Solid retention (10+ reviews)
+- **Overdue**: Words past their review date
+
+### FSRS Performance Metrics
+
+**Algorithm insights**:
+- **Average Difficulty**: How challenging your vocabulary is
+- **Retention Rate**: Percentage of successful recalls
+- **Total Lapses**: Number of forgotten words
+- **Accuracy Rate**: Overall answer correctness
+
+### Recent Activity
+
+**Learning timeline**: Recent review sessions and word additions
+- **Activity feed**: Chronological list of learning events
+- **Performance indicators**: Success rates per session
+- **Progress tracking**: See your improvement over time
+
+### Features
+
+- **Real-time updates**: Statistics refresh with new learning data
+- **Export capability**: Download your learning data for external analysis
+- **Performance insights**: Understand your learning patterns
+- **Motivation tracking**: See your vocabulary growth visually
 
 ## 🔧 Configuration
 
